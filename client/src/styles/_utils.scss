@@ -1,0 +1,45 @@
+.screen-center{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex{
+    display: flex;
+}
+
+.justify-center{
+    display: flex;
+    justify-content: center;
+}
+
+.space-between{
+    display: flex;
+    justify-content: center;
+}
+
+.btn{
+    cursor: pointer;
+    background-position: center;
+    transition: all 0.8s;
+    border-radius: 2px;
+    padding: .5rem 2rem;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #2196f3;
+    box-shadow: 0 0 4px #999;
+  
+    &:active {
+        background-color: #6eb9f7;
+        background-size: 100%;
+        transition: all 0s;
+    }
+  
+    &:hover {
+        background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%;
+    }
+  
+}
