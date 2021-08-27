@@ -1,9 +1,7 @@
 
-const mongoose = require("mongoose")
-const session = require("express-session")
-// const MongoDBSession = require("connect-mongodb-session")(session)
+import mongoose from "mongoose"
 
-const connectMongo = async () => {
+export const connectMongo = async () => {
     var mongouri = `mongodb+srv://dbAdmin:dbAdmin@cluster0.iduvg.mongodb.net/medicalassitant?retryWrites=true&w=majority`
     const con = await mongoose.connect(
         mongouri,
@@ -18,4 +16,3 @@ const connectMongo = async () => {
     )
 }
 
-module.exports = connectMongo;

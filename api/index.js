@@ -1,16 +1,13 @@
-//connect DB
-// import { store, connectMongo } from "./config/mongo"
-const connectMongo = require("./src/config/mongo")
-connectMongo()
-
-const express = require('express')
+import express from "express"
 const app = express()
+import {connectMongo} from "./src/config/mongo.js"
+connectMongo()
+const port = 5000
+
+//Routes
+
 
 console.log("hello")
-
-const port = 5000
-const session = require("express-session")
-const bodyParser = require("body-parser")
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
