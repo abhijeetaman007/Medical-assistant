@@ -1,4 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+// /import mongoose, { Schema, Document } from "mongoose";
+const mongoose = require("mongoose")
+const {Schema} = require("mongoose")
+
 
 const Merchant = mongoose.Schema({
     userId: {

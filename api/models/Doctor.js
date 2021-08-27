@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
+const mongoose = require("mongoose")
+const {Schema} = require("mongoose")
 const Doctor = mongoose.Schema({
     userId: {
         type: Schema.Types.ObjectId,
@@ -14,6 +14,9 @@ const Doctor = mongoose.Schema({
         type: String,
         required: true,
     },
+    patients:[{
+        type: mongoose.Schema.Types.ObjectId, ref: "user" 
+    }]
 });
 
 module.exports = mongoose.model("doctor", Doctor);

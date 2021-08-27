@@ -9,29 +9,27 @@ addform
     -verified/unverified (doctor/family or you)
 
 --Abhijeet--
-viewhistory
-becomedoctor
-becomemerchant
-addgeneralinfo
+viewhistory         --> done
+becomedoctor        --> done
+becomemerchant      --> done
+addgeneralinfo      --> done
 
 --Abhijeet--
-Doctor
-viewhistory/:userId
-viewpatients
+Doctor:               
+    viewhistory/:userId  --> done
+    viewpatients         --> done
 
 
 
 ---After above part done---
 
 --Rhea--
-Merchant
-
-addlocation
-editstoocks
+Merchant:
+    addlocation
+    editstoocks
 
 --Abhijeet--
-Admin
-
-verifydoctor
-verifymerchant
+Admin:           
+    verifydoctor     --> done
+    verifymerchant   --> done
 

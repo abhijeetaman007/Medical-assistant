@@ -56,13 +56,13 @@ const User = mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    isDoctor: {
-        type: Boolean,
-        default: false,
+    isDoctor:{
+        isVerified:{type:Boolean,default:false},
+        doctorId:{type:mongoose.Schema.Types.ObjectId, ref: "doctor",default:null}
     },
-    isMerchant: {
-        type: Boolean,
-        default: false,
+    isMerchant:{
+        isVerified:{type:Boolean,default:false},
+        merchantId:{type:mongoose.Schema.Types.ObjectId, ref: "merchant",default:null}
     },
     isAdmin: {
         type: Boolean,
@@ -76,6 +76,7 @@ const User = mongoose.Schema({
             description: { type: String },
         },
     ],
+    //Stores userId who can view user's history
     friends: [
         {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
