@@ -1,0 +1,37 @@
+User
+
+--Rhea--
+addfriend
+removefriend
+acceptfriend
+getfriendrequests
+addform
+    -verified/unverified (doctor/family or you)
+
+--Abhijeet--
+viewhistory
+becomedoctor
+becomemerchant
+addgeneralinfo
+
+--Abhijeet--
+Doctor
+viewhistory/:userId
+viewpatients
+
+
+
+---After above part done---
+
+--Rhea--
+Merchant
+
+addlocation
+editstoocks
+
+--Abhijeet--
+Admin
+
+verifydoctor
+verifymerchant
+
