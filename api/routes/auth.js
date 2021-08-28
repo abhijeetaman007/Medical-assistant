@@ -24,6 +24,7 @@ const Register = async (req, res) => {
                 token: newtoken,
             });
             await user.save();
+            // On register verification mail sent
             sendEmail(newtoken, user, 2);
             return res.send({
                 success: true,
@@ -41,17 +42,6 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
     const { email, password } = req.body;
-
-    // if (email === "") {
-    //     return res.send({ success: false, data: "Email Field empty" });
-    // }
-
-    // const re =
-    //     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    // if (!re.test(String(email).toLowerCase())) {
-    //     return res.send({ success: false, data: "Invalid EmailID" });
-    // }
 
     try {
         let user = await User.findOne({ email: email });
@@ -95,7 +85,6 @@ const Login = async (req, res) => {
 const ResetPassword = async (req, res) => {
     try {
         let urltoken = req.params.token;
-        console.log("urltoken" + urltoken);
         const hashpwd = await bcrypt.hash(req.body.password, 10);
         let user = await User.findOne({ token: urltoken });
         if (user) {
@@ -118,19 +107,6 @@ const ResetPassword = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.send({ success: false, data: "Server Error" });
-    }
-};
-
-const GetUser = async (req, res) => {
-    try {
-        const user = await User.findOne({ email: req.user.email });
-        return res.send({
-            success: true,
-            data: user,
-        });
-    } catch (err) {
-        console.log(`Error : ${err.message}`);
-        res.status(500).json({ success: false, msg: "Server Error." });
     }
 };
 
@@ -188,11 +164,38 @@ const VerifyEmail = async (req, res) => {
     }
 };
 
+const ReVerify = async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (user) {
+            if (user.isVerified) {
+                return res.send({
+                    success: true,
+                    data: "You are already verified!",
+                });
+            } else {
+                sendEmail(user.token, user, 2);
+                return res.send({
+                    success: true,
+                    data: "Check Inbox",
+                });
+            }
+        } else {
+            return res.send({
+                success: true,
+                data: "User isnt registered",
+            });
+        }
+    } catch (err) {
+        console.log(`Error : ${err.message}`);
+        res.status(500).json({ success: false, msg: "Server Error." });
+    }
+};
 module.exports = {
     Register,
     Login,
     ResetPassword,
     VerifyEmail,
     ForgotPassword,
-    GetUser,
+    ReVerify,
 };

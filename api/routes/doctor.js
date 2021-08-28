@@ -8,7 +8,7 @@ async function viewPatientHistory(req,res)
 {
     try
     {
-        let userId = req.params.userId      //UserId of doctor
+        let userId = req.params.userId      //UserId of doctor or family member
         let patientId = req.body.patientId  //UserId of patient
         let patient = await User.findById({_id:patientId})
         if(!patient)
