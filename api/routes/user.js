@@ -222,13 +222,15 @@ async function addFriend(req, res) {
         //if friends request already sent by me, send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
             if (friend.requests[i].userId == myId) {
-                return res.status(200).send({
-                    success: false,
-                    data: "Friend Request Already sent",
-                });
+                return res
+                    .status(200)
+                    .send({
+                        success: false,
+                        data: "Friend Request Already sent",
+                    });
             }
         }
-        friend.requests.push({ userId: myId });
+        friend.requests.push({userId:myId});
         await friend.save();
         return res
             .status(200)
@@ -324,14 +326,11 @@ async function getFriends(req, res) {
     }
 }
 
-//Find nearest Store  --- not done fully
 async function getNearestStore(req, res) {
     // let itemName = req.body.itemName;
     let loc = req.body.location
     let currentloc = await geocoder.geocode(loc);
     console.log("Curr location "+currentloc)
-
-    // await Merchant.index({location:"2dsphere"});
 
     let merchants = await Merchant.find({
         location:{
