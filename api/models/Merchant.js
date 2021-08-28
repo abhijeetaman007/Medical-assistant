@@ -32,7 +32,10 @@ const Merchant = mongoose.Schema({
     },
     stocks: [
         {
-           
+            // itemId: {
+            //     type: String,
+            //     unique: true,
+            // },
             itemName: {
                 type: String,
                 required: true,
@@ -56,6 +59,8 @@ const Merchant = mongoose.Schema({
         },
     ],
 });
+
+Merchant.index({ location: "2dsphere" });
 
 //GeoCoder create Location
 Merchant.pre("save", async function (next) {

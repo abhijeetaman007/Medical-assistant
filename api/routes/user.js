@@ -25,6 +25,7 @@ async function viewHistory(req, res) {
 //User adding his own medical record --- unverified documents
 async function addToHistory(req, res) {
     try {
+        console.log("History : "+req.user)
         let userId = req.user.id;
         console.log(req.user);
         let user = await User.findById({ _id: userId });
@@ -134,7 +135,9 @@ async function becomeDoctor(req, res) {
 
 //User applying to become merchant
 async function becomeMerchant(req, res) {
+    console.log(req.body)
     try {
+        console.log("Applying for merchant")
         let userId = req.user.id;
         console.log(userId);
         let merchant = await Merchant.findOne({ userId: userId });
@@ -144,7 +147,7 @@ async function becomeMerchant(req, res) {
                 .send({ success: false, msg: "Already applied for Merchant" });
         }
         let newMerchant = new Merchant({
-            userId: userId,
+            userId:userId,
             address: req.body.address,
             certificateLink: req.body.certificateLink,
         });
@@ -323,20 +326,27 @@ async function getFriends(req, res) {
 
 //Find nearest Store  --- not done fully
 async function getNearestStore(req, res) {
-    let itemName = req.body.itemName;
-    let currentloc = await geocoder.geocode(this.address);
+    // let itemName = req.body.itemName;
+    let loc = req.body.location
+    let currentloc = await geocoder.geocode(loc);
+    console.log("Curr location "+currentloc)
 
-    let merchants = Merchant.find({
-        "stocks.itemName": itemName,
-        $nearSphere: {
-            $geometry: {
-                type: "Point",
-                coordinates: [currentloc[0].longitude, currentloc[0].latitude],
-            },
-            $maxDistance: 20000,
-        },
-        "loc.type": "Point",
+    // await Merchant.index({location:"2dsphere"});
+
+    let merchants = await Merchant.find({
+        location:{
+            $near:{
+                $maxDistance: 15000,       //Searching in a range of 15 kms
+                $geometry:{
+                    type:"Point",
+                    coordinates:[currentloc[0].longitude, currentloc[0].latitude],
+                },
+            }
+        }
     });
+    console.log("Merchants : ")
+    console.log(merchants)
+
     if (merchants) {
         return res.status(200).send({ success: true, data: merchants });
     }

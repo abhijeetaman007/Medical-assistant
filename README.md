@@ -8,7 +8,7 @@
 - Tired of searching medicines in your locality? Now no need, searching is just one click away.Get to know about nearest medical stores,medicines available,etc.
 - Specially during the pandemic this application will be of great importance providing ease of searching doctors,sharing medical records,getting in touch with medical stores.
 
-## 👨‍👩‍👦‍👦Users (can be a patient or a doctor or a merchant or any combination)
+## 👨‍👩‍👦‍👦Users (Either patient or doctor or merchant or both)
 - Anyone can register as user by registering in the portal.
 - Users will have ease to maintain their medical records by adding supporting medical documents,test reports for reference in future.
 - Users can share their medical history with family,friends and doctors.
