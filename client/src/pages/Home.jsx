@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { get, post } from "../utils/requests";
 import useInputState from "../hooks/useInputState";
 import { useToasts } from "react-toast-notifications";
-
+import useForceUpdate from "../hooks/useForceUpdate"
+import {storeFile} from "../utils/utilities"
 
 export default function Home() {
   const auth = useAuth();
@@ -17,6 +18,25 @@ export default function Home() {
   const [userFriends, setUserFriends] = useState([]);
   const [userRequests, setUserRequests] = useState([]);
   const [role, setRole] = useState(0); //1 for merchant and 2 for doctor
+
+  const merchantFileRef = React.useRef(null)
+  const docFileRef = React.useRef(null)
+  const historyFileRef = React.useRef(null)
+
+  const handleSaveDocument = async (folderName,fileName,ref) => {
+      if(!ref || !ref.current) return 
+      const file = ref.current.files[0];
+      try{
+        const url = await storeFile(folderName,fileName , file)
+        console.log(url);
+      }
+      catch(err){
+        addToast("Something Went Wrong",{appearance:"error"})
+      }
+  }
+
+  const update = useForceUpdate()
+
   const fetchHistory = async () => {
     try {
       await get(`/user/viewhistory`).then((data) => {
@@ -45,9 +65,10 @@ export default function Home() {
   const applyforDoc = async (e) => {
     e.preventDefault();
     description.handleReset();
+    const certificateLink = await handleSaveDocument('doc-applications', auth.user._id, docFileRef)
     try {
       await post(`/user/applydoctor`, {
-        certificateLink : "ceritificateLink"
+        certificateLink
       }).then((data) => {
         console.log(data);
         if (data.success) addToast(data.msg, { appearance: "success" });
@@ -61,9 +82,11 @@ export default function Home() {
   const applyForMerchant = async (e) => {
     e.preventDefault();
     address.handleReset();
+    const certificateLink = await handleSaveDocument('merchant-applications', auth.user._id, merchantFileRef)
+
     try {
       await post(`/user/applymerchant`, {
-        certificateLink: "URLofCertificate",
+        certificateLink,
         address: address.value,
       }).then((data) => {
         console.log(data);
@@ -79,9 +102,11 @@ export default function Home() {
   const postHistory = async (e) => {
     e.preventDefault();
     description.handleReset();
+    const imageLink = await handleSaveDocument(`user-history-${auth.user._id}`, Date.now().toString(), merchantFileRef)
+
     try {
       await post(`/user/updatehistory`, {
-        imageLink: "URLofPic",
+        imageLink,
         description: description.value,
       }).then((data) => {
         console.log(data);
@@ -136,14 +161,14 @@ export default function Home() {
             </div>
             <form onSubmit={postHistory}>
               <h3>Upload History</h3>
-              <input type="file" name="file" accept="file/*" />
+              <input ref={historyFileRef} onChange={update} type="file" name="file" accept="file/*" />
               <input
                 value={description.value}
                 onChange={description.handleChange}
                 type="text"
                 placeholder="Description"
               />
-              <button>Submit</button>
+              <button className="btn" >Submit</button>
             </form>
             <h1>My History </h1>
             <div className="historyWrapper">
@@ -166,14 +191,14 @@ export default function Home() {
             
             <form onSubmit={applyForMerchant}>
               <h3>Verify Merhcant Details</h3>
-              <input type="file" name="file" accept="file/*" />
+              <input ref={merchantFileRef} onChange={update} type="file" name="file" accept="file/*" />
               <input
                 value={address.value}
                 onChange={address.handleChange}
                 type="text"
                 placeholder="Location"
               />
-              <button>Submit</button>
+              <button className="btn">Submit</button>
             </form>
             
           </>
@@ -183,9 +208,9 @@ export default function Home() {
             
             <form onSubmit={applyforDoc}>
               <h3>Verify Doc Details</h3>
-              <input type="file" name="file" accept="file/*" />
+              <input ref={docFileRef} onChange={update} type="file" name="file" accept="file/*" />
               
-              <button>Submit</button>
+              <button className="btn" >Submit</button>
             </form>
             
           </>
