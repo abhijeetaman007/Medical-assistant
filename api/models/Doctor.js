@@ -6,10 +6,6 @@ const Doctor = mongoose.Schema({
         required: true,
         ref: "user",
     },
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
     certificateLink: {
         type: String,
         required: true,

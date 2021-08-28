@@ -56,13 +56,21 @@ const User = mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    isDoctor:{
-        isVerified:{type:Boolean,default:false},
-        doctorId:{type:mongoose.Schema.Types.ObjectId, ref: "doctor",default:null}
+    isDoctor: {
+        isVerified: { type: Boolean, default: false },
+        doctorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "doctor",
+            default: null,
+        },
     },
-    isMerchant:{
-        isVerified:{type:Boolean,default:false},
-        merchantId:{type:mongoose.Schema.Types.ObjectId, ref: "merchant",default:null}
+    isMerchant: {
+        isVerified: { type: Boolean, default: false },
+        merchantId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "merchant",
+            default: null,
+        },
     },
     isAdmin: {
         type: Boolean,
@@ -77,15 +85,16 @@ const User = mongoose.Schema({
         },
     ],
     //Stores userId who can view user's history
+    //On acception of a friend request by X ,the userID of X will be put in friends
     friends: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-            hasAccepted: { type: Boolean, default: false },
+            userId: { type: mongoose.Schema.Types.ObjectId },
         },
     ],
+    //Stores userId of people who have requested current user to be a friend->after user has decided to accept or reject we remove the userID from the array
     requests: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+            userId: { type: mongoose.Schema.Types.ObjectId },
         },
     ],
     token: {

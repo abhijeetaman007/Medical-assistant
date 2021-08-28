@@ -22,6 +22,8 @@ const {
     becomeMerchant,
     updateProfile,
     getUserProfile,
+    AddFriend,
+    RemoveFriend,
 } = require("./user");
 
 const { viewPatientHistory, viewPatients } = require("./doctor");
@@ -37,20 +39,24 @@ router.get("/auth/verifyemail/:token", VerifyEmail);
 router.post("/auth/reverify", ReVerify);
 
 //User Routes ->Abhijeet
-router.get("/user/viewhistory/:userId", viewHistory);
-router.post("/user/updatehistory/:userId", addToHistory);
-router.post("/user/applydoctor/:userId", becomeDoctor);
-router.post("/user/applymerchant/:userId", becomeMerchant);
-router.post("/user/updateprofile/:userId", updateProfile);
-router.get("/user/viewprofile/:userId", getUserProfile);
+router.get("/user/viewhistory/:userId",isLoggedIn, viewHistory);
+router.post("/user/updatehistory/:userId",isLoggedIn, addToHistory);
+router.post("/user/applydoctor/:userId",isLoggedIn, becomeDoctor);
+router.post("/user/applymerchant/:userId",isLoggedIn, becomeMerchant);
+router.post("/user/updateprofile/:userId",isLoggedIn, updateProfile);
+router.get("/user/viewprofile/:userId",isLoggedIn, getUserProfile);
 
 //Doctor Routes ->Abhijeet
 // (:userId is userID of Doctor, pass patient userId in body)
-router.post("/user/doctor/viewhistory/:userId", viewPatientHistory);
-router.get("/user/doctor/viewpatients/:userId", viewPatients);
+router.post("/user/doctor/viewhistory/:userId",isLoggedIn, viewPatientHistory);
+router.get("/user/doctor/viewpatients/:userId",isLoggedIn, viewPatients);
 
 //Admin Routes ->Abhijeet
-router.get("/user/admin/verifydoctor/:doctorId", verifyDoctor);
-router.get("/user/admin/verifydoctor/:merchantId", verifyMerchant);
+router.get("/user/admin/verifydoctor/:doctorId",isLoggedIn, verifyDoctor);
+router.get("/user/admin/verifydoctor/:merchantId",isLoggedIn, verifyMerchant);
+
+//User Routes ->Rhea
+router.post("/user/addfriend", isLoggedIn, AddFriend);
+router.post("/user/removefriend", isLoggedIn, RemoveFriend);
 
 module.exports = router;

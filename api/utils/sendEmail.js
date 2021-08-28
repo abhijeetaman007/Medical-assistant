@@ -8,10 +8,10 @@ module.exports = async (token, receiver, purpose) => {
         const subject2 = "Verify Email";
 
         // for now this works http://localhost:5000/api/auth/forgotpassword/9d0b0b59-4f27-4b0d-892d-26c1311fd1f7
-        const output1 = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/forgotpassword/${token}">http://localhost:3000/forgotpassword/${token}</a><p>Regards,<br>Alpha Team</p>`;
+        const output1 = `<p>Hello ${receiver.firstName}</p>Link for reset password: <a href ="http://localhost:3000/forgotpassword/${token}">http://localhost:3000/forgotpassword/${token}</a><p>Regards,<br>Alpha Team</p>`;
 
         // for now this works http://localhost:5000/api/auth/verifyemail/9d0b0b59-4f27-4b0d-892d-26c1311fd1f7
-        const output2 = `<p>Hello ${receiver.username}</p>Link for email verification: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>Alpha Team</p>`;
+        const output2 = `<p>Hello ${receiver.firstName}</p>Link for email verification: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>Alpha Team</p>`;
 
         let output;
         let subject;
