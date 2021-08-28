@@ -32,10 +32,7 @@ const Merchant = mongoose.Schema({
     },
     stocks: [
         {
-            itemId: {
-                type: String,
-                unique: true,
-            },
+           
             itemName: {
                 type: String,
                 required: true,

@@ -1,67 +1,144 @@
-.landing{
-    min-height: 100vh;
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  h4 {
+    font-size: 2rem;
+    opacity: 0.6;
+    margin-bottom: 3rem;
+  }
+
+  .btn {
+    margin: 1rem;
+  }
+
+  .buttons {
+    margin-top: 1rem;
+  }
+}
+
+.home {
+  min-height: 100vh;
+  background-color: #eee;
+  display: flex;
+
+  h1 {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .historyWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    width: 80%;
+    margin: auto;
+  }
+  .history {
+    background-color: #fff;
+    padding: 3rem 2rem;
+    border-radius: 5px;
+    width: 100%;
+    flex: 40%;
+    margin: 15px;
+    display: flex;
+    flex-direction: row;
+    img {
+      width: 15rem;
+      height: 20rem;
+    }
+  }
+  form {
+    background-color: #fff;
+    padding: 3rem 2rem;
+    border-radius: 5px;
+    width: 70%;
+    max-width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      text-align: center;
+    }
+    input {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #0008;
+      transition: 0.2s all;
+
+      &:focus {
+        border-bottom: 2px solid $blue;
+      }
+    }
+  }
+
+  .userDetails {
+    background-color: #fff;
+    padding-left: 1.5rem;
+    padding-top: 1.5rem;
+    margin-bottom:  3rem;
+  
+    width: 100%;
+    height: 15rem;
+    
+    display: flex;
+    flex-direction: row;
+     .profile-picture{
+         height: 12rem;
+         border-radius: 50%;
+         margin-right: 5rem;
+     } 
+   
+    
+  }
+
+  .btn {
+    width: max-content;
+    margin-top: 1.5rem;
+  }
+
+  aside {
+    flex: 1;
+    height: 100vh;
+    
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 2rem 0;
+  }
 
-    h1{
-        font-size: 3.5rem;
+  main {
+    flex: 6;
+  }
+
+  button {
+    cursor: pointer;
+    transition: 0.2s all;
+    font-size: 1.25rem;
+    text-align: left;
+    padding: 1rem 0;
+
+    &:hover {
+      color: $blue;
     }
+  }
 
-    h4{
-        font-size: 2rem;
-        opacity: .6;
-        margin-bottom: 3rem;
-    }
-
-    .btn{
-        margin: 1rem;
-    }
-
-    .buttons{
-        margin-top: 1rem;
-    }
-}
-
-.home{
-    min-height: 100vh;
-    background-color: #eee;
+  .bottom {
     display: flex;
+    flex-direction: column;
+  }
 
-    aside{
-        flex: 1;
-        background-color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        padding: 2rem 0;
-    }
-
-    main{
-        flex: 6;
-    }
-
-    button{
-        cursor: pointer;
-        transition: .2s all;
-        font-size: 1.25rem;
-        text-align: left;
-        padding: 1rem 0;
-
-        &:hover{
-            color: $blue;
-        }
-    }
-
-    .bottom{
-        display: flex;
-        flex-direction: column;
-    }
-
-    h2{
-        color: $blue;
-        text-align: center;
-    }
+  h2 {
+    color: $blue;
+    text-align: center;
+  }
 }

@@ -142,7 +142,7 @@ async function becomeMerchant(req, res) {
                 .send({ success: false, msg: "Already applied for Merchant" });
         }
         let newMerchant = new Merchant({
-            userId: req.params.userId,
+            userId: userId,
             address: req.body.address,
             certificateLink: req.body.certificateLink,
         });
