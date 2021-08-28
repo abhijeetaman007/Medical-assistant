@@ -5,6 +5,12 @@ const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
 
+const getUserFromToken = async (req , res) => {
+    const token = jwt.verify(req.params.token, process.env.JWT_SECRET);
+    const user = await User.findOne({_id: token.user.id })
+    res.status(200).json(user)
+}
+
 const Register = async (req, res) => {
     console.log("in register");
     try {
@@ -198,4 +204,5 @@ module.exports = {
     VerifyEmail,
     ForgotPassword,
     ReVerify,
+    getUserFromToken
 };

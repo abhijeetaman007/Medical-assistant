@@ -13,6 +13,7 @@ const {
     ForgotPassword,
     VerifyEmail,
     ReVerify,
+    getUserFromToken
 } = require("./auth");
 
 const {
@@ -31,6 +32,7 @@ const { verifyDoctor, verifyMerchant } = require("./admin");
 //Auth Routes ->Rhea
 router.post("/auth/register", Register);
 router.post("/auth/login", Login);
+router.get("/auth/user/:token", getUserFromToken);
 router.post("/auth/forgotpassword", ForgotPassword);
 router.post("/auth/resetpassword/:token", ResetPassword);
 router.get("/auth/verifyemail/:token", VerifyEmail);

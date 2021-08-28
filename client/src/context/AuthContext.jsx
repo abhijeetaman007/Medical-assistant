@@ -4,7 +4,7 @@ import React, {
     useState,
     useEffect,
 } from 'react';
-import { post } from '../utils/requests';
+import { post, get } from '../utils/requests';
 import { useHistory } from 'react-router-dom';
 import jwt from 'jwt-decode';
 import { TOKEN_ID } from "../utils/constants"
@@ -22,7 +22,7 @@ export default function AuthProvider({ children }) {
     
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_ID);
-    if (token) setUser(jwt(token))
+    if (token) get(`/auth/user/${token}`).then(setUser)
     setLoading(false);
   }, []);
   
@@ -33,7 +33,7 @@ export default function AuthProvider({ children }) {
         password,
       });
       if(!res.success) return res
-      setUser(jwt(res.token));
+      setUser(res.user);
       localStorage.setItem(TOKEN_ID, res.token);
       history.replace('/');
       return res

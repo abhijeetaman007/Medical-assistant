@@ -1,10 +1,14 @@
 import React from 'react'
+import DoctorApplication from '../components/DoctorApplication'
 import { useAuth } from '../context/AuthContext'
 
 export default function Home() {
     const auth = useAuth()
+    const [docModalOpen, setDocModalOpen] = React.useState(false)
 
     return (
+        <>
+        <DoctorApplication open={docModalOpen} handleClose={()=>setDocModalOpen(false)}  />
         <div className="home">
             <aside>
                 <div className="top">
@@ -16,11 +20,11 @@ export default function Home() {
                 <button> 
                   I am a Merchant
                 </button>
-                <button > 
+                <button onClick={()=>setDocModalOpen(true)} > 
                   I am a Doctor
                 </button>
                 <button className="logout" onClick={auth.logout} > 
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i className="fas fa-sign-out-alt"></i> Logout
                 </button>
                 </div>
             </aside>
@@ -28,5 +32,6 @@ export default function Home() {
 
             </main>
         </div>
+        </>
     )
 }
