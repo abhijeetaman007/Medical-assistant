@@ -114,6 +114,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 2rem 0;
+    h2 {
+      color: #265BFF;
+    }
+    button{
+      margin-left: 10px;
+      margin-right: 10px;
+    }
   }
 
   main {
