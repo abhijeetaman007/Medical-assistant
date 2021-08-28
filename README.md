@@ -13,10 +13,10 @@
 - Users can search doctors from wide range of available doctors as per their need and request doctor for accepting their request to become their doctor.
 - Users can search for medicines and other medical resources and get to know the nearest medical stores/merchant who has that in stock.
 - Users can apply to become doctor or merchants by uploading required certificates and can help other patients using the application.After applying admin verifies the required condition then user becomes merchant or doctor.
-
+<hr/>
 - Doctors have ease to directly update medical history using the application in a paperless and efficient manner along with an option to upload test reports and supporting documents for future refernce
 - Doctors can view history of their any patients when ever and where ever they want.
-
+<hr/>
 - Medical merchants/store can connect to patients by showing available stocks for wide veriety of medicines or other medical equipments providing ease for patients to locate near by store with available stock.
 - Merchants can any time update stocks.  
 
