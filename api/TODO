@@ -13,18 +13,25 @@ addfriend(sends req to friend) -->done
 removefriend(removes friend from friends array) -->done
 acceptfriend -->done
 reject friend -->done
-getfriendrequests 
+getfriendrequests -->done
 
 addform
-    -verified/unverified (doctor/family or you)
+    -verified/unverified (doctor/family) -->done
 
 Merchant:
-    addlocation
-    editstoocks
+    editstocks
+        -add items
+        -remove item
+        -update item
 
-
+Testing of all routes
 
 --Abhijeet's Routes--
+
+Merchant
+    getallmerchantbycitybyname
+    addlocation
+        -check latitude and longitude
 
 Models -->done
 

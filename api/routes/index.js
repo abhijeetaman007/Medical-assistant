@@ -25,6 +25,7 @@ const {
     acceptFriendRequest,
     rejectFriendRequest,
     getFriendRequests,
+    getFriends,
 } = require("./user");
 
 const { viewPatientHistory, viewPatients } = require("./doctor");
@@ -67,4 +68,6 @@ router.post(
 router.post("/user/acceptfriendrequest", isLoggedIn, acceptFriendRequest);
 router.post("/user/rejectfriendrequest", isLoggedIn, rejectFriendRequest);
 router.get("/user/getfriendrequests", isLoggedIn, getFriendRequests);
+router.get("/user/getfriends", isLoggedIn, getFriends);
+
 module.exports = router;

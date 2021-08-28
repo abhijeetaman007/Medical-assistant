@@ -208,43 +208,24 @@ async function getUserProfile(req, res) {
 
 async function addFriend(req, res) {
     try {
-        console.log("inside add friend");
         let friendId = req.body.friendId;
         let friend = await User.findOne({ _id: friendId });
         let myId = req.user.id;
-        console.log(friend);
-        console.log("myid:" + myId);
-        //if friends request already sent by me send msg already sent request
+        //if friends request already sent by me, send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
             if (friend.requests[i].userId == myId) {
-                return res
-                    .status(200)
-                    .send({
-                        success: false,
-                        data: "Friend Request Already sent",
-                    });
+                return res.status(200).send({
+                    success: false,
+                    data: "Friend Request Already sent",
+                });
             }
         }
-        friend.requests.push({userId:myId});
+        friend.requests.push({ userId: myId });
         await friend.save();
+
         return res
             .status(200)
             .send({ success: true, data: "Friend Request sent" });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send({ success: false, msg: "Server Error" });
-    }
-}
-
-async function removeFriend(req, res) {
-    try {
-        let friendId = req.body.friendId;
-        console.log(friendId);
-        let user = await User.findById({ _id: req.user.id });
-        console.log(user);
-        user.friends.filter((friend) => friend.userId != friendId);
-        await user.save();
-        return res.status(200).send({ success: true, data: "Friend Removed" });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
@@ -256,15 +237,14 @@ async function acceptFriendRequest(req, res) {
         let requestId = req.body.requestId;
         //inside the requests array remove the requestId and put in friends array
         let userId = req.user.id;
-        console.log("meeeeeeeeee");
         const user = await User.findOne({ _id: userId });
         console.log(user);
         //remove the object from requests
-        for (let i = 0; i < user.requests.length; i++) {
-            console.log(user.requests[i]);
-        }
-        user.requests.filter((requser) => requser.userId != requestId);
-        await user.save();
+        await User.update(
+            { _id: userId },
+            { $pull: { requests: { userId: requestId } } }
+        );
+
         for (let i = 0; i < user.friends.length; i++) {
             if (user.friends[i].userId == requestId) {
                 return res
@@ -272,29 +252,41 @@ async function acceptFriendRequest(req, res) {
                     .send({ success: true, data: "Already a friend" });
             }
         }
+
         //add object in friends if not friend already
         user.friends.push({ userId: requestId });
         await user.save();
+
         return res.status(200).send({ success: true, data: "Friend Added" });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
     }
 }
+
+async function removeFriend(req, res) {
+    try {
+        let friendId = req.body.friendId;
+        let user = await User.findOne({ _id: req.user.id });
+        await User.update(
+            { _id: req.user.id },
+            { $pull: { friends: { userId: friendId } } }
+        );
+        return res.status(200).send({ success: true, data: "Friend Removed" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
+
 async function rejectFriendRequest(req, res) {
     try {
         let requestId = req.body.requestId;
         //inside the requests array remove the requestId and put in friends array
-        let userId = req.user.id;
-        console.log("meeeeeeeeee");
-        const user = await User.findOne({ _id: userId });
-        console.log(user);
-        //remove the object from requests
-        for (let i = 0; i < user.requests.length; i++) {
-            console.log(user.requests[i]);
-        }
-        user.requests.filter((requser) => requser.userId != requestId);
-        await user.save();
+        await User.update(
+            { _id: req.user.id },
+            { $pull: { requests: { userId: requestId } } }
+        );
         return res
             .status(200)
             .send({ success: true, data: "Friend Request Rejected" });
@@ -306,8 +298,16 @@ async function rejectFriendRequest(req, res) {
 async function getFriendRequests(req, res) {
     try {
         let user = await User.findOne({ _id: req.user.id });
-        let friendrequests = user.requests;
-        return res.status(200).send({ success: true, data: friendrequests });
+        return res.status(200).send({ success: true, data: user.requests });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
+async function getFriends(req, res) {
+    try {
+        let user = await User.findOne({ _id: req.user.id });
+        return res.status(200).send({ success: true, data: user.friends });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
@@ -326,4 +326,5 @@ module.exports = {
     acceptFriendRequest,
     rejectFriendRequest,
     getFriendRequests,
+    getFriends
 };
