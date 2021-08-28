@@ -1,5 +1,3 @@
-// /import mongoose, { Schema, Document } from "mongoose";
-
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 const geocoder = require("../utils/geoCoder");
@@ -34,6 +32,10 @@ const Merchant = mongoose.Schema({
     },
     stocks: [
         {
+            itemId: {
+                type: String,
+                unique: true,
+            },
             itemName: {
                 type: String,
                 required: true,

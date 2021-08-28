@@ -6,7 +6,7 @@ const Merchant = require("../models/Merchant");
 // To view user's medical history
 async function viewHistory(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let user = await User.findById({ _id: userId });
         if (!user) {
             return res
@@ -24,7 +24,7 @@ async function viewHistory(req, res) {
 //User adding his own medical record --- unverified documents
 async function addToHistory(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let user = await User.findById({ _id: userId });
 
         user.history.push({
@@ -109,7 +109,7 @@ async function addToFriendHistory(req, res) {
 // User applying to become doctor
 async function becomeDoctor(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let doctor = await Doctor.findOne({ userId: userId });
         if (doctor) {
             return res
@@ -133,7 +133,7 @@ async function becomeDoctor(req, res) {
 //User applying to become merchant
 async function becomeMerchant(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let merchant = await Merchant.findOne({ userId: userId });
         if (merchant) {
             return res
@@ -158,7 +158,7 @@ async function becomeMerchant(req, res) {
 //Update Profile
 async function updateProfile(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let updateData = req.body;
         let user = await User.findById({ _id: userId });
         if (!user) {
@@ -189,7 +189,7 @@ async function updateProfile(req, res) {
 // get user profile
 async function getUserProfile(req, res) {
     try {
-        let userId = req.params.userId;
+        let userId = req.user.id;
         let user = await User.findById({ _id: userId }).populate(
             "isDoctor isMerchant"
         );
@@ -208,9 +208,10 @@ async function getUserProfile(req, res) {
 
 async function addFriend(req, res) {
     try {
-        let friendId = req.body.friendId;
-        let friend = await User.findOne({ _id: friendId });
         let myId = req.user.id;
+        let friendId = req.body.friendId;
+
+        let friend = await User.findOne({ _id: friendId });
         //if friends request already sent by me, send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
             if (friend.requests[i].userId == myId) {
@@ -222,7 +223,6 @@ async function addFriend(req, res) {
         }
         friend.requests.push({ userId: myId });
         await friend.save();
-
         return res
             .status(200)
             .send({ success: true, data: "Friend Request sent" });
@@ -234,11 +234,10 @@ async function addFriend(req, res) {
 
 async function acceptFriendRequest(req, res) {
     try {
+        let userId = req.user.id;
         let requestId = req.body.requestId;
         //inside the requests array remove the requestId and put in friends array
-        let userId = req.user.id;
         const user = await User.findOne({ _id: userId });
-        console.log(user);
         //remove the object from requests
         await User.update(
             { _id: userId },
@@ -252,11 +251,9 @@ async function acceptFriendRequest(req, res) {
                     .send({ success: true, data: "Already a friend" });
             }
         }
-
         //add object in friends if not friend already
         user.friends.push({ userId: requestId });
         await user.save();
-
         return res.status(200).send({ success: true, data: "Friend Added" });
     } catch (err) {
         console.log(err);
@@ -266,10 +263,11 @@ async function acceptFriendRequest(req, res) {
 
 async function removeFriend(req, res) {
     try {
+        let userId = req.user.id;
         let friendId = req.body.friendId;
-        let user = await User.findOne({ _id: req.user.id });
+        let user = await User.findOne({ _id: userId });
         await User.update(
-            { _id: req.user.id },
+            { _id: userId },
             { $pull: { friends: { userId: friendId } } }
         );
         return res.status(200).send({ success: true, data: "Friend Removed" });
@@ -281,10 +279,11 @@ async function removeFriend(req, res) {
 
 async function rejectFriendRequest(req, res) {
     try {
+        let userId = req.user.id;
         let requestId = req.body.requestId;
         //inside the requests array remove the requestId and put in friends array
         await User.update(
-            { _id: req.user.id },
+            { _id: userId },
             { $pull: { requests: { userId: requestId } } }
         );
         return res
@@ -297,7 +296,8 @@ async function rejectFriendRequest(req, res) {
 }
 async function getFriendRequests(req, res) {
     try {
-        let user = await User.findOne({ _id: req.user.id });
+        let userId = req.user.id;
+        let user = await User.findOne({ _id: userId });
         return res.status(200).send({ success: true, data: user.requests });
     } catch (err) {
         console.log(err);
@@ -306,7 +306,8 @@ async function getFriendRequests(req, res) {
 }
 async function getFriends(req, res) {
     try {
-        let user = await User.findOne({ _id: req.user.id });
+        let userId = req.user.id;
+        let user = await User.findOne({ _id: userId });
         return res.status(200).send({ success: true, data: user.friends });
     } catch (err) {
         console.log(err);
@@ -326,5 +327,5 @@ module.exports = {
     acceptFriendRequest,
     rejectFriendRequest,
     getFriendRequests,
-    getFriends
+    getFriends,
 };

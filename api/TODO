@@ -14,6 +14,7 @@ removefriend(removes friend from friends array) -->done
 acceptfriend -->done
 reject friend -->done
 getfriendrequests -->done
+getfriends -->done
 
 addform
     -verified/unverified (doctor/family) -->done
