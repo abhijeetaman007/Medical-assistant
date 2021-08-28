@@ -10,9 +10,9 @@ resetpassword --> done
 
 User:
 addfriend(sends req to friend) -->done
-removefriend(removes friend from friends array) 
-acceptfriend 
-reject friend 
+removefriend(removes friend from friends array) -->done
+acceptfriend -->done
+reject friend -->done
 getfriendrequests 
 
 addform

@@ -26,6 +26,7 @@ async function addToHistory(req, res) {
     try {
         let userId = req.params.userId;
         let user = await User.findById({ _id: userId });
+
         user.history.push({
             imageLink: req.body.imageLink,
             description: req.body.description,
@@ -49,6 +50,62 @@ async function addToHistory(req, res) {
     }
 }
 
+//User adding friends medical records --- verified/unverified documents
+async function addToFriendHistory(req, res) {
+    try {
+        let friendId = req.params.friendId;
+        let friend = await User.findById({ _id: friendId });
+        let userId = req.user.id; //current user logged in
+        let access = 0;
+        for (let i = 0; i < friend.friends.length; i++) {
+            if (friend.friends[i]._id.toString() === userId) {
+                //if my id is in friends array then only give access
+                access = 1;
+                break;
+            }
+        }
+        if (access == 1) {
+            let user = await User.findOne({ userId: req.user.id });
+            if (user.isDoctor) {
+                friend.history.push({
+                    imageLink: req.body.imageLink,
+                    description: req.body.description,
+                    isVerified: true,
+                    uploadedBy: userId,
+                });
+            } else {
+                friend.history.push({
+                    imageLink: req.body.imageLink,
+                    description: req.body.description,
+                    isVerified: false,
+                    uploadedBy: userId,
+                });
+            }
+            await User.updateOne(
+                {
+                    _id: userId,
+                },
+                {
+                    $set: {
+                        history: user.history,
+                    },
+                }
+            );
+            return res.send({
+                success: true,
+                msg: "History Updated by friend",
+            });
+        } else {
+            return res.send({
+                success: true,
+                msg: "You dont have access to edit history of so called friend who isnt you're friend",
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
 // User applying to become doctor
 async function becomeDoctor(req, res) {
     try {
@@ -149,26 +206,24 @@ async function getUserProfile(req, res) {
     }
 }
 
-async function AddFriend(req, res) {
+async function addFriend(req, res) {
     try {
         console.log("inside add friend");
         let friendId = req.body.friendId;
         let friend = await User.findOne({ _id: friendId });
         let myId = req.user.id;
         console.log(friend);
-        console.log(myId);
-        //if friends request already sent by me dont do anything
+        console.log("myid:" + myId);
+        //if friends request already sent by me send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
-            if (friend.requests[i]._id.toString() === myId) {
-                return res
-                    .status(200)
-                    .send({
-                        success: false,
-                        data: "Friend Request Already sent",
-                    });
+            if (friend.requests[i].userId == myId) {
+                return res.status(200).send({
+                    success: false,
+                    data: "Friend Request Already sent",
+                });
             }
         }
-        friend.requests.push(myId);
+        friend.requests.push({ userId: myId });
         await friend.save();
         return res
             .status(200)
@@ -179,27 +234,94 @@ async function AddFriend(req, res) {
     }
 }
 
-async function RemoveFriend(req, res) {
-    // try {
-    //     let friendId = req.body.friendId;
-    //     let user = await User.findById({ _id: req.user.id });
-    //     user.friends.filter((friend) => friend.userId !== friendId);
-    //     await user.save();
-    //     return res.status(200).send({ success: true, data: "Friend Removed" });
-    // } catch (err) {
-    //     console.log(err);
-    //     return res.status(500).send({ success: false, msg: "Server Error" });
-    // }
+async function removeFriend(req, res) {
+    try {
+        let friendId = req.body.friendId;
+        console.log(friendId);
+        let user = await User.findById({ _id: req.user.id });
+        console.log(user);
+        user.friends.filter((friend) => friend.userId != friendId);
+        await user.save();
+        return res.status(200).send({ success: true, data: "Friend Removed" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
 }
 
-
+async function acceptFriendRequest(req, res) {
+    try {
+        let requestId = req.body.requestId;
+        //inside the requests array remove the requestId and put in friends array
+        let userId = req.user.id;
+        console.log("meeeeeeeeee");
+        const user = await User.findOne({ _id: userId });
+        console.log(user);
+        //remove the object from requests
+        for (let i = 0; i < user.requests.length; i++) {
+            console.log(user.requests[i]);
+        }
+        user.requests.filter((requser) => requser.userId != requestId);
+        await user.save();
+        for (let i = 0; i < user.friends.length; i++) {
+            if (user.friends[i].userId == requestId) {
+                return res
+                    .status(200)
+                    .send({ success: true, data: "Already a friend" });
+            }
+        }
+        //add object in friends if not friend already
+        user.friends.push({ userId: requestId });
+        await user.save();
+        return res.status(200).send({ success: true, data: "Friend Added" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
+async function rejectFriendRequest(req, res) {
+    try {
+        let requestId = req.body.requestId;
+        //inside the requests array remove the requestId and put in friends array
+        let userId = req.user.id;
+        console.log("meeeeeeeeee");
+        const user = await User.findOne({ _id: userId });
+        console.log(user);
+        //remove the object from requests
+        for (let i = 0; i < user.requests.length; i++) {
+            console.log(user.requests[i]);
+        }
+        user.requests.filter((requser) => requser.userId != requestId);
+        await user.save();
+        return res
+            .status(200)
+            .send({ success: true, data: "Friend Request Rejected" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
+async function getFriendRequests(req, res) {
+    try {
+        let user = await User.findOne({ _id: req.user.id });
+        let friendrequests = user.requests;
+        return res.status(200).send({ success: true, data: friendrequests });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
 module.exports = {
     viewHistory,
     addToHistory,
+    addToFriendHistory,
     becomeDoctor,
     becomeMerchant,
     updateProfile,
     getUserProfile,
-    AddFriend,
-    RemoveFriend,
+    addFriend,
+    removeFriend,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    getFriendRequests,
 };

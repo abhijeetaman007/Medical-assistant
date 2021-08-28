@@ -2,9 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const isLoggedIn = require("../middleware/isLoggedIn");
-const isAdmin = require("../middleware/isAdmin");
-const isMerchant = require("../middleware/isMerchant");
-const isDoctor = require("../middleware/isDoctor");
 
 const {
     Register,
@@ -18,12 +15,16 @@ const {
 const {
     viewHistory,
     addToHistory,
+    addToFriendHistory,
     becomeDoctor,
     becomeMerchant,
     updateProfile,
     getUserProfile,
-    AddFriend,
-    RemoveFriend,
+    addFriend,
+    removeFriend,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    getFriendRequests,
 } = require("./user");
 
 const { viewPatientHistory, viewPatients } = require("./doctor");
@@ -39,24 +40,31 @@ router.get("/auth/verifyemail/:token", VerifyEmail);
 router.post("/auth/reverify", ReVerify);
 
 //User Routes ->Abhijeet
-router.get("/user/viewhistory/:userId",isLoggedIn, viewHistory);
-router.post("/user/updatehistory/:userId",isLoggedIn, addToHistory);
-router.post("/user/applydoctor/:userId",isLoggedIn, becomeDoctor);
-router.post("/user/applymerchant/:userId",isLoggedIn, becomeMerchant);
-router.post("/user/updateprofile/:userId",isLoggedIn, updateProfile);
-router.get("/user/viewprofile/:userId",isLoggedIn, getUserProfile);
+router.get("/user/viewhistory/:userId", isLoggedIn, viewHistory);
+router.post("/user/updatehistory/:userId", isLoggedIn, addToHistory);
+router.post("/user/applydoctor/:userId", isLoggedIn, becomeDoctor);
+router.post("/user/applymerchant/:userId", isLoggedIn, becomeMerchant);
+router.post("/user/updateprofile/:userId", isLoggedIn, updateProfile);
+router.get("/user/viewprofile/:userId", isLoggedIn, getUserProfile);
 
 //Doctor Routes ->Abhijeet
 // (:userId is userID of Doctor, pass patient userId in body)
-router.post("/user/doctor/viewhistory/:userId",isLoggedIn, viewPatientHistory);
-router.get("/user/doctor/viewpatients/:userId",isLoggedIn, viewPatients);
+router.post("/user/doctor/viewhistory/:userId", isLoggedIn, viewPatientHistory);
+router.get("/user/doctor/viewpatients/:userId", isLoggedIn, viewPatients);
 
 //Admin Routes ->Abhijeet
-router.get("/user/admin/verifydoctor/:doctorId",isLoggedIn, verifyDoctor);
-router.get("/user/admin/verifydoctor/:merchantId",isLoggedIn, verifyMerchant);
+router.get("/user/admin/verifydoctor/:doctorId", isLoggedIn, verifyDoctor);
+router.get("/user/admin/verifydoctor/:merchantId", isLoggedIn, verifyMerchant);
 
 //User Routes ->Rhea
-router.post("/user/addfriend", isLoggedIn, AddFriend);
-router.post("/user/removefriend", isLoggedIn, RemoveFriend);
-
+router.post("/user/addfriend", isLoggedIn, addFriend);
+router.post("/user/removefriend", isLoggedIn, removeFriend);
+router.post(
+    "/user/updatefriendhistory/:friendId",
+    isLoggedIn,
+    addToFriendHistory
+);
+router.post("/user/acceptfriendrequest", isLoggedIn, acceptFriendRequest);
+router.post("/user/rejectfriendrequest", isLoggedIn, rejectFriendRequest);
+router.get("/user/getfriendrequests", isLoggedIn, getFriendRequests);
 module.exports = router;
