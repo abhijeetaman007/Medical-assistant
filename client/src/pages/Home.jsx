@@ -47,15 +47,14 @@ export default function Home() {
     description.handleReset();
     try {
       await post(`/user/applydoctor`, {
-        imageLink: "URLofPic",
-        description: description.value,
+        certificateLink : "ceritificateLink"
       }).then((data) => {
         console.log(data);
         if (data.success) addToast(data.msg, { appearance: "success" });
       });
     } catch (err) {
-      console.log(err);
-      addToast(err.msg, { appearance: "error" });
+      console.log(err.response);
+      addToast(err.response.data.msg, { appearance: "error" });
     }
    
   };
@@ -71,8 +70,8 @@ export default function Home() {
         if (data.success) addToast(data.msg, { appearance: "success" });
       });
     } catch (err) {
-      console.log(err);
-      addToast(err.msg, { appearance: "error" });
+      console.log(err.response);
+      addToast(err.response.data.msg, { appearance: "error" });
     }
     
   };

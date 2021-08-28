@@ -26,6 +26,7 @@ async function viewHistory(req, res) {
 async function addToHistory(req, res) {
     try {
         let userId = req.user.id;
+        console.log(req.user);
         let user = await User.findById({ _id: userId });
 
         user.history.push({
@@ -135,6 +136,7 @@ async function becomeDoctor(req, res) {
 async function becomeMerchant(req, res) {
     try {
         let userId = req.user.id;
+        console.log(userId);
         let merchant = await Merchant.findOne({ userId: userId });
         if (merchant) {
             return res
@@ -146,6 +148,7 @@ async function becomeMerchant(req, res) {
             address: req.body.address,
             certificateLink: req.body.certificateLink,
         });
+        console.log(newMerchant);
         await newMerchant.save();
         return res
             .status(200)
