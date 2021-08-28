@@ -47,6 +47,7 @@ textarea {
 button {
     border: none;
     cursor: pointer;
+    background-color: inherit;
 
     &:focus {
         outline: none;
