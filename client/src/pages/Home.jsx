@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { get, post } from "../utils/requests";
 import useInputState from "../hooks/useInputState";
 import { useToasts } from "react-toast-notifications";
-
+import useForceUpdate from "../hooks/useForceUpdate";
+import { storeFile } from "../utils/utilities";
 
 export default function Home() {
   const auth = useAuth();
@@ -17,6 +18,25 @@ export default function Home() {
   const [userFriends, setUserFriends] = useState([]);
   const [userRequests, setUserRequests] = useState([]);
   const [role, setRole] = useState(0); //1 for merchant and 2 for doctor
+  const [patients, setPatients] = useState([]);
+  const merchantFileRef = React.useRef(null);
+  const docFileRef = React.useRef(null);
+  const historyFileRef = React.useRef(null);
+
+  const handleSaveDocument = async (folderName, fileName, ref) => {
+    if (!ref || !ref.current) return;
+    const file = ref.current.files[0];
+    try {
+      const url = await storeFile(folderName, fileName, file);
+      return url.toString();
+    } catch (err) {
+      addToast("Something Went Wrong", { appearance: "error" });
+      return "";
+    }
+  };
+
+  const update = useForceUpdate();
+
   const fetchHistory = async () => {
     try {
       await get(`/user/viewhistory`).then((data) => {
@@ -36,18 +56,25 @@ export default function Home() {
         setUserDetails(data.data);
         setUserFriends(data.data.friends);
         setUserRequests(data.data.requests);
+        if (data.data.isDoctor.isVerified) fetchPatients();
+        // if(data.data.isMerchant.isVerified)fetchMerchants();
       });
     } catch (err) {
       console.log(err);
     }
   };
- 
+
   const applyforDoc = async (e) => {
     e.preventDefault();
     description.handleReset();
+    const certificateLink = await handleSaveDocument(
+      "doc-applications",
+      auth.user._id,
+      docFileRef
+    );
     try {
       await post(`/user/applydoctor`, {
-        certificateLink : "ceritificateLink"
+        certificateLink,
       }).then((data) => {
         console.log(data);
         if (data.success) addToast(data.msg, { appearance: "success" });
@@ -56,14 +83,19 @@ export default function Home() {
       console.log(err.response);
       addToast(err.response.data.msg, { appearance: "error" });
     }
-   
   };
   const applyForMerchant = async (e) => {
     e.preventDefault();
     address.handleReset();
+    const certificateLink = await handleSaveDocument(
+      "merchant-applications",
+      auth.user._id,
+      merchantFileRef
+    );
+
     try {
       await post(`/user/applymerchant`, {
-        certificateLink: "URLofCertificate",
+        certificateLink,
         address: address.value,
       }).then((data) => {
         console.log(data);
@@ -73,15 +105,33 @@ export default function Home() {
       console.log(err.response);
       addToast(err.response.data.msg, { appearance: "error" });
     }
-    
+  };
+
+  const fetchPatients = async () => {
+    try {
+      await get(`/user/doctor/viewpatients`).then((data) => {
+        console.log(data.data);
+        // setPatients(data.data);
+      });
+    } catch (err) {
+      console.log(err.response);
+    }
   };
 
   const postHistory = async (e) => {
     e.preventDefault();
     description.handleReset();
+    const imageLink = await handleSaveDocument(
+      `user-history-${auth.user._id}`,
+      Date.now().toString(),
+      historyFileRef
+    );
+
+    console.log(imageLink);
+
     try {
       await post(`/user/updatehistory`, {
-        imageLink: "URLofPic",
+        imageLink: imageLink,
         description: description.value,
       }).then((data) => {
         console.log(data);
@@ -108,9 +158,9 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
-          <button onClick={() => setRole(1)}>I am a Merchant</button>
-          <button onClick={() => setRole(2)}>I am a Doctor</button>
-          <button onClick={() => setRole(0)}>Profile</button>
+          <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>
+          <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> I am a Doctor</button>
+          <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
           <button className="logout" onClick={auth.logout}>
             <i class="fas fa-sign-out-alt"></i> Logout
           </button>
@@ -136,24 +186,27 @@ export default function Home() {
             </div>
             <form onSubmit={postHistory}>
               <h3>Upload History</h3>
-              <input type="file" name="file" accept="file/*" />
+              <input
+                ref={historyFileRef}
+                onChange={update}
+                type="file"
+                name="file"
+                accept="file/*"
+              />
               <input
                 value={description.value}
                 onChange={description.handleChange}
                 type="text"
                 placeholder="Description"
               />
-              <button>Submit</button>
+              <button className="btn">Submit</button>
             </form>
             <h1>My History </h1>
             <div className="historyWrapper">
               {myhistory.map((his, index) => {
                 return (
                   <div className="history">
-                    <img
-                      src="https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                      alt="background-img"
-                    />
+                    <img src={his.imageLink} alt="background-img" />
                     <p>{his.description}</p>
                   </div>
                 );
@@ -163,31 +216,50 @@ export default function Home() {
         )}
         {role === 1 && (
           <>
-            
             <form onSubmit={applyForMerchant}>
               <h3>Verify Merhcant Details</h3>
-              <input type="file" name="file" accept="file/*" />
+              <input
+                ref={merchantFileRef}
+                onChange={update}
+                type="file"
+                name="file"
+                accept="file/*"
+              />
               <input
                 value={address.value}
                 onChange={address.handleChange}
                 type="text"
                 placeholder="Location"
               />
-              <button>Submit</button>
+              <button className="btn">Submit</button>
             </form>
-            
+            {userDetails.isMerchant.isVerified === false ? (
+              <h1>Application Status: Not Verified </h1>
+            ) : (
+              <p>Verified</p>
+            )}
+           
           </>
         )}
         {role === 2 && (
           <>
-            
             <form onSubmit={applyforDoc}>
               <h3>Verify Doc Details</h3>
-              <input type="file" name="file" accept="file/*" />
-              
-              <button>Submit</button>
+              <input
+                ref={docFileRef}
+                onChange={update}
+                type="file"
+                name="file"
+                accept="file/*"
+              />
+
+              <button className="btn">Submit</button>
             </form>
-            
+            {userDetails.isDoctor.isVerified === false ? (
+              <h1>Application Status: Not Verified </h1>
+            ) : (
+              <p>Verified</p>
+            )}
           </>
         )}
       </main>

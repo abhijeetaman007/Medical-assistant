@@ -31,6 +31,9 @@
     color: #fff !important;
     background-color: #2196f3;
     box-shadow: 0 0 4px #999;
+    min-width: 6rem;
+    display: flex;
+    justify-content: center;
   
     &:active {
         background-color: #6eb9f7;
@@ -42,4 +45,63 @@
         background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%;
     }
   
+}
+
+.file{
+    font-size: 1.5rem;
+    margin: 2rem 0;
+
+    
+    .name{
+        background-color:#333;
+    color: #212121;
+font-size: 1.25rem;
+border-radius: 5px;
+padding: .5rem;
+min-width: 15rem;
+max-width: 65%;
+background-color: #eee;
+
+
+@media (max-width:510px) {
+    min-height: 2.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+    }
+
+    label{
+        
+
+        margin-left: .5rem;
+        background-color: #333;
+        padding: .25rem .5rem;
+        border-radius: 5px;
+        cursor: pointer;
+
+        background-color: #eee;
+        color: #212121;
+
+        @media (max-width:510px) {
+            margin-top: 1rem;
+        }
+
+        @media (max-width:510px) {
+            margin-left: 0;
+
+        }
+
+
+    }
+
+
+    .choose{
+        display: flex;
+
+        @media (max-width:510px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
 }

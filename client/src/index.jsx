@@ -6,6 +6,9 @@ import { BrowserRouter } from 'react-router-dom';
 import AuthProvider from "./context/AuthContext"
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastProvider } from 'react-toast-notifications';
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root')
 
 ReactDOM.render(
   <React.StrictMode>
