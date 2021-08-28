@@ -142,7 +142,7 @@ async function becomeMerchant(req, res) {
         }
         let newMerchant = new Merchant({
             userId: req.params.userId,
-            location: req.body.location,
+            address: req.body.address,
             certificateLink: req.body.certificateLink,
         });
         await newMerchant.save();
@@ -217,13 +217,15 @@ async function addFriend(req, res) {
         //if friends request already sent by me send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
             if (friend.requests[i].userId == myId) {
-                return res.status(200).send({
-                    success: false,
-                    data: "Friend Request Already sent",
-                });
+                return res
+                    .status(200)
+                    .send({
+                        success: false,
+                        data: "Friend Request Already sent",
+                    });
             }
         }
-        friend.requests.push({ userId: myId });
+        friend.requests.push({userId:myId});
         await friend.save();
         return res
             .status(200)
