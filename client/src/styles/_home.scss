@@ -1,0 +1,55 @@
+.landing{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    h1{
+        font-size: 3.5rem;
+    }
+
+    h4{
+        font-size: 2rem;
+        opacity: .6;
+        margin-bottom: 3rem;
+    }
+
+    .btn{
+        margin: 1rem;
+    }
+
+    .buttons{
+        margin-top: 1rem;
+    }
+}
+
+.home{
+    min-height: 100vh;
+    background-color: #eee;
+    display: flex;
+
+    aside{
+        flex: 1;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2rem 0;
+    }
+
+    main{
+        flex: 6;
+    }
+
+    .logout{
+        cursor: pointer;
+        transition: .2s all;
+        font-size: 1.25rem;
+
+        &:hover{
+            color: $blue;
+        }
+    }
+}

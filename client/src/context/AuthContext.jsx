@@ -32,23 +32,26 @@ export default function AuthProvider({ children }) {
         email: email.trim(),
         password,
       });
+      if(!res.success) return res
       setUser(jwt(res.token));
       localStorage.setItem(TOKEN_ID, res.token);
       history.replace('/');
+      return res
     } catch (err) {
         throw err;
     }
   };
   
-  const register = async (name, username, email, password) => {
+  const register = async (firstName, lastName, email, password) => {
     try {
-      await post('/auth/register', {
-        name,
-        username,
+     const res = await post('/auth/register', {
+        firstName,
+        lastName,
         email: email.trim().toLowerCase(),
         password,
       });
-      history.replace('/login');
+
+      return res
     } catch (err) {
       throw err;
     }

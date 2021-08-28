@@ -61,7 +61,7 @@ const Login = async (req, res) => {
 
         //IMP
         const payload = {
-            user: { id: user._id, email: user.email },
+            user: { firstName:user.firstName, id: user._id, email: user.email },
         };
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, {

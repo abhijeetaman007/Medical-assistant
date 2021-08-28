@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 dotenv.config({ path: "./.env" });
 
@@ -11,8 +12,8 @@ connectMongo();
 
 const port = 5000;
 
+app.use(cors({origin:"*"}))
 app.use(express.json({ extended: false }));
-
 app.use("/api", Routes);
 
 app.get("/test", (req, res) => {
