@@ -4,6 +4,7 @@ const router = express.Router();
 const isLoggedIn = require("../middleware/isLoggedIn");
 const isAdmin = require("../middleware/isAdmin");
 const isDoctor = require("../middleware/isDoctor");
+const isMerchant = require("../middleware/isMerchant");
 
 const {
     Register,
@@ -28,6 +29,9 @@ const {
     rejectFriendRequest,
     getFriendRequests,
     getFriends,
+    viewDoctors,
+    viewMerchants,
+    getNearestStore,
 } = require("./user");
 
 const { viewPatientHistory, viewPatients } = require("./doctor");
@@ -88,6 +92,8 @@ router.post("/user/acceptfriendrequest", isLoggedIn, acceptFriendRequest);
 router.post("/user/rejectfriendrequest", isLoggedIn, rejectFriendRequest);
 router.get("/user/getfriendrequests", isLoggedIn, getFriendRequests);
 router.get("/user/getfriends", isLoggedIn, getFriends);
+router.get("/user/viewmerchants", isLoggedIn, viewDoctors);
+router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
 
 //Merchant Routes ->Rhea
 

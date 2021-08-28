@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
-const geocoder = require("../utils/geoCoder")
+const geocoder = require("../utils/geoCoder");
 
 // To view user's medical history
 async function viewHistory(req, res) {
@@ -295,6 +295,7 @@ async function rejectFriendRequest(req, res) {
         return res.status(500).send({ success: false, msg: "Server Error" });
     }
 }
+
 async function getFriendRequests(req, res) {
     try {
         let userId = req.user.id;
@@ -305,6 +306,7 @@ async function getFriendRequests(req, res) {
         return res.status(500).send({ success: false, msg: "Server Error" });
     }
 }
+
 async function getFriends(req, res) {
     try {
         let userId = req.user.id;
@@ -317,28 +319,46 @@ async function getFriends(req, res) {
 }
 
 //Find nearest Store  --- not done fully
-async function getNearestStore(req,res)
-{
-    let itemName=req.body.itemName
-    let currentloc  = await geocoder.geocode(this.address)
-    
-    let merchants = Merchant.find({"stocks.itemName":itemName,
-        "$nearSphere": {
-            "$geometry": {
-                "type": "Point",
-                "coordinates": [currentloc[0].longitude,currentloc[0].latitude] 
+async function getNearestStore(req, res) {
+    let itemName = req.body.itemName;
+    let currentloc = await geocoder.geocode(this.address);
+
+    let merchants = Merchant.find({
+        "stocks.itemName": itemName,
+        $nearSphere: {
+            $geometry: {
+                type: "Point",
+                coordinates: [currentloc[0].longitude, currentloc[0].latitude],
             },
-            "$maxDistance": 20000
+            $maxDistance: 20000,
         },
-        "loc.type": "Point"
-    })    
-    if(merchants)
-    {
-        return res.status(200).send({success:true,data:merchants})
+        "loc.type": "Point",
+    });
+    if (merchants) {
+        return res.status(200).send({ success: true, data: merchants });
     }
-    return res.status(400).send({success:false,msg:"No Store found"})
+    return res.status(400).send({ success: false, msg: "No Store found" });
 }
 
+async function viewMerchants(req, res) {
+    try {
+        let merchants = await Merchant.find({}).exec();
+        return res.status(200).send({ success: true, data: merchants });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
+
+async function viewDoctors(req, res) {
+    try {
+        let doctors = await Doctor.find({}).exec();
+        return res.status(200).send({ success: true, data: doctors });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
+}
 
 module.exports = {
     viewHistory,
@@ -354,4 +374,7 @@ module.exports = {
     rejectFriendRequest,
     getFriendRequests,
     getFriends,
+    viewDoctors,
+    viewMerchants,
+    getNearestStore
 };
