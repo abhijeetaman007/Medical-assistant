@@ -1,4 +1,6 @@
-Auth
+--Rhea's Routes--
+
+Auth:
 reverifyemail --> done
 verifyemail --> done
 register --> done
@@ -6,37 +8,45 @@ login --> done
 forgotpassword --> done
 resetpassword --> done
 
-User
+User:
+addfriend(sends req to friend) -->done
+removefriend(removes friend from friends array) -->done
+acceptfriend -->done
+reject friend -->done
+getfriendrequests -->done
+getfriends -->done
+getalldoctors -->done
+getallmerchants --> done
 
---Rhea--
-addfriend
-removefriend
-acceptfriend
-getfriendrequests
 addform
-    -verified/unverified (doctor/family or you)
+    -verified/unverified (doctor/family) -->done
 
---Abhijeet--
+Merchant:
+    editstocks
+        -add items
+        -remove item
+        -update item
+
+
+--Abhijeet's Routes--
+
+Merchant
+    getallmerchantbycitybyname
+    addlocation
+        -check latitude and longitude
+
+Models -->done
+
+User:
 viewhistory         --> done
 becomedoctor        --> done
 becomemerchant      --> done
 addgeneralinfo      --> done
 
---Abhijeet--
 Doctor:               
     viewhistory/:userId  --> done
     viewpatients         --> done
 
-
-
----After above part done---
-
---Rhea--
-Merchant:
-    addlocation
-    editstoocks
-
---Abhijeet--
 Admin:           
     verifydoctor     --> done
     verifymerchant   --> done

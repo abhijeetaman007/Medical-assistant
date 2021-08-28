@@ -4,7 +4,7 @@ import { TOKEN_ID } from "./constants"
 const fetcher = axios.create({
   baseURL: process.env.REACT_APP_API_URI,
   headers: {
-    authorization: `Bearer ${localStorage.getItem(TOKEN_ID)}`,
+    'x-auth-token': `${localStorage.getItem(TOKEN_ID)}`,
   },
 });
 
