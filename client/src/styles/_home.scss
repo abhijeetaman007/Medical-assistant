@@ -161,3 +161,16 @@
 }
 
 }
+
+.merchant-dashboard{
+  display: flex;
+  align-items: stretch;
+
+  form{
+    flex: 1;
+  }
+
+  main{
+    flex: 4;
+  }
+}

@@ -12,6 +12,12 @@ export default function Home() {
   const address = useInputState();
   const { addToast } = useToasts();
 
+  const itemName = useInputState();
+  const itemQuantity = useInputState();
+  const itemCost = useInputState();
+  const itemDescription = useInputState();
+  const itemTags = useInputState();
+
   const [historyLoad, setistoryLoad] = useState(true);
   const [myhistory, setMyHistory] = useState([]);
   const [userDetails, setUserDetails] = useState({});
@@ -144,6 +150,26 @@ export default function Home() {
     fetchHistory();
   };
 
+  const handleMerchantSubmit = async (e)=>{
+    e.preventDefault()
+    if(!itemName.value || !itemQuantity.value || !itemCost.value || !itemDescription.value || !itemTags.value){
+      return addToast("All fields are required",{appearance:"error"})
+    }
+    const res = await post('/user/merchant/additem',{
+      itemName:itemName.value,
+      quantity: parseInt(itemQuantity.value),
+      cost:parseInt(itemCost.value),
+      description:itemDescription.value,
+      tags:itemTags.value.split(" ")
+    })
+    if(!res.success){
+      addToast("Something went wrong",{appearance:"error"})
+    }
+    else{
+      addToast("Item Added",{appearance:"success"})
+    }
+  }
+
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
@@ -158,7 +184,8 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
-          <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>
+       { auth.user.isMerchant.isVerified || true && <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
+       { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>}
           <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> I am a Doctor</button>
           <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
           <button className="logout" onClick={auth.logout}>
@@ -262,6 +289,25 @@ export default function Home() {
             )}
           </>
         )}
+        {
+            role === 3 && <>
+              <div className="merchant-dashboard">
+                <main>
+                  <h1>Items</h1>
+                    
+                </main>
+                <form onSubmit={handleMerchantSubmit} >
+                 <h1>Add Item</h1>
+                  <input placeholder="Name" value={itemName.value} onChange={itemName.handleChange} type="text" />
+                  <input placeholder="Quantity" value={itemQuantity.value} onChange={itemQuantity.handleChange} type="text" />
+                  <input placeholder="Cost" value={itemCost.value} onChange={itemCost.handleChange} type="text" />
+                  <input placeholder="Description" value={itemDescription.value} onChange={itemDescription.handleChange} type="text" />
+                  <input placeholder="Tags (Space Separated)" value={itemTags.value} onChange={itemTags.handleChange} type="text" />
+                  <button className="btn">Submit</button>
+                </form>
+              </div>
+            </>
+        }
       </main>
     </div>
   );
