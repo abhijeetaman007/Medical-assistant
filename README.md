@@ -38,8 +38,10 @@
 
 ## Setting Up Project
 ### Frontend
-```npm install```  (To install package)
+```cd client```    <br/>
+```npm install```  (To install package) <br/>
 ```npm start```    (To start frontend)
 ### Backend
-```npm install```  (To install package)
-```npm start```    (To start frontend)
+```cd api```       <br/>
+```npm install```  (To install package)<br/>
+```npm start```    (To start backend)
