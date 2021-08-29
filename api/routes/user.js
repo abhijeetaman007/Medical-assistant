@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
-const Item = require("../models/Item")
+const Item = require("../models/Item");
 const geocoder = require("../utils/geoCoder");
 
 // To view user's medical history
@@ -328,7 +328,7 @@ async function getFriends(req, res) {
 }
 
 async function getNearestStore(req, res) {
-    let currentloc= req.body.location;
+    let currentloc = req.body.location;
     // let currentloc = await geocoder.geocode(loc);
     console.log("Curr location " + currentloc);
 
@@ -338,10 +338,7 @@ async function getNearestStore(req, res) {
                 $maxDistance: 15000, //Searching in a range of 15 kms
                 $geometry: {
                     type: "Point",
-                    coordinates: [
-                        currentloc[0],
-                        currentloc[1],
-                    ],
+                    coordinates: [currentloc[0], currentloc[1]],
                 },
             },
         },
@@ -350,12 +347,10 @@ async function getNearestStore(req, res) {
     // console.log(merchants)
 
     let merchantWithStock = await Item.find({
-        'merchantId':{
-            $in:[
-                ...merchants   
-            ]
-        }
-    }).populate("merchantId")
+        merchantId: {
+            $in: [...merchants],
+        },
+    }).populate("merchantId");
 
     // console.log("Merchants : ");
     // console.log(merchants);
