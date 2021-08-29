@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
+const Item = require("../models/Item")
 const geocoder = require("../utils/geoCoder");
 
 // To view user's medical history
@@ -327,12 +328,11 @@ async function getFriends(req, res) {
 }
 
 async function getNearestStore(req, res) {
-    let currentloc = req.body.location;
+    let currentloc= req.body.location;
     // let currentloc = await geocoder.geocode(loc);
     console.log("Curr location " + currentloc);
 
     let merchants = await Merchant.find({
-
         location: {
             $near: {
                 $maxDistance: 15000, //Searching in a range of 15 kms
@@ -345,12 +345,25 @@ async function getNearestStore(req, res) {
                 },
             },
         },
-    });
-    console.log("Merchants : ");
-    console.log(merchants);
+    }).select("_id");
+    // console.log("merchant")
+    // console.log(merchants)
 
-    if (merchants) {
-        return res.status(200).send({ success: true, data: merchants });
+    let merchantWithStock = await Item.find({
+        'merchantId':{
+            $in:[
+                ...merchants   
+            ]
+        }
+    }).populate("merchantId")
+
+    // console.log("Merchants : ");
+    // console.log(merchants);
+    // console.log("Final")
+    // console.log(merchantWithStock)
+
+    if (merchantWithStock) {
+        return res.status(200).send({ success: true, data: merchantWithStock });
     }
     return res.status(400).send({ success: false, msg: "No Store found" });
 }
