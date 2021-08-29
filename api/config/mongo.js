@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const connectMongo = async () => {
-    // var mongouri = `mongodb+srv://dbAdmin:dbAdmin@cluster0.iduvg.mongodb.net/medicalassitant?retryWrites=true&w=majority`;
-    var mongouri = `mongodb://localhost:27017/assistant`;
+    var mongouri = `mongodb+srv://dbAdmin:dbAdmin@cluster0.iduvg.mongodb.net/medicalassitant?retryWrites=true&w=majority`;
+    // var mongouri = `mongodb://localhost:27017/assistant`;
     const con = await mongoose.connect(
         mongouri,
         {

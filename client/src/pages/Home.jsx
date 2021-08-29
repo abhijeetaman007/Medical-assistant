@@ -31,6 +31,10 @@ export default function Home() {
   const merchantFileRef = React.useRef(null);
   const docFileRef = React.useRef(null);
   const historyFileRef = React.useRef(null);
+  const [location, setLocation] = useState(null)
+
+  const [adminDataLoading, setAdminDataLoading] = useState(true)
+  const [adminData, setAdminData] = useState([])
 
   const handleSaveDocument = async (folderName, fileName, ref) => {
     if (!ref || !ref.current) return;
@@ -191,8 +195,23 @@ export default function Home() {
     console.log(err);
   }) 
 
-  const fetchAdminDetails = ()=>{
+  const fetchAdminDetails = async ()=>{
+    try{
+      const data = await Promise.all([get('/user/admin/merchants'),get("/user/admin/doctors")])
+      setAdminDataLoading(false)
+      setAdminData(data)
+    }
+    catch(err){
+      addToast("Something went wrong",{appearance:"error"})
+    }
+  }
 
+  const setUserLocation = ()=>{
+    navigator.geolocation.getCurrentPosition((loc)=>{
+      setLocation([loc.coords.longitude,loc.coords.latitude])
+    }, ()=>{
+      addToast("Something went wrong",{appearance:"error"})
+    });
   }
   
 
@@ -201,6 +220,7 @@ export default function Home() {
     fetchHistory();
     fetchMerchantData()
     fetchAdminDetails()
+    setUserLocation()
   }, []);
 
   return (
@@ -371,12 +391,12 @@ export default function Home() {
         {
           role === 4 && <div className="admin">
             {
-            // adminDataLoading && 
+            adminDataLoading && 
             <div className="screen-center">
               <Loading/>
             </div> }
             {
-            //  !adminDataLoading &&  
+             !adminDataLoading &&  
             <>
             <section>
             <h1>

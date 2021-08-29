@@ -4,9 +4,25 @@ const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
 const Item = require("../models/Item");
 
-async function getAllItems (req,res ) {
-   const data = await Item.find({merchantId:req.user.isMerchant.merchantId})
-res.status(200).json(data)
+async function getAllItems(req, res) {
+    try {
+        let merchant = await Merchant.findOne({ userId: req.user.id });
+        if (!merchant) {
+            return res.send({ success: true, msg: "Merchant doesnt exist" });
+        }
+        let items = await Item.find({ merchantId: merchant._id });
+        if (!items) {
+            return res.send({ success: false, msg: "Item doesnt exist" });
+        }
+        return res.send({
+            success: true,
+            msg: "All items",
+            data: items,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ success: false, msg: "Server Error" });
+    }
 }
 
 async function addItem(req, res) {
@@ -83,5 +99,5 @@ module.exports = {
     addItem,
     deleteItem,
     editAddress,
-    getAllItems
+    getAllItems,
 };
