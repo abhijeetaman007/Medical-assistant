@@ -219,6 +219,7 @@ async function getUserProfile(req, res) {
 async function addFriend(req, res) {
     try {
         let myId = req.user.id;
+        let user = await User.findOne({ _id: myId });
         let friendId = req.body.friendId;
 
         let friend = await User.findOne({ _id: friendId });
@@ -231,7 +232,11 @@ async function addFriend(req, res) {
                 });
             }
         }
-        friend.requests.push({ userId: myId });
+        friend.requests.push({
+            userId: myId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+        });
         await friend.save();
         return res
             .status(200)
@@ -262,7 +267,12 @@ async function acceptFriendRequest(req, res) {
             }
         }
         //add object in friends if not friend already
-        user.friends.push({ userId: requestId });
+        let accepteduser = await User.findOne({ _id: requestId });
+        user.friends.push({
+            userId: requestId,
+            firstName: accepteduser.firstName,
+            lastName: accepteduser.lastName,
+        });
         await user.save();
         return res.status(200).send({ success: true, data: "Friend Added" });
     } catch (err) {
@@ -320,7 +330,20 @@ async function getFriends(req, res) {
     try {
         let userId = req.user.id;
         let user = await User.findOne({ _id: userId });
-        return res.status(200).send({ success: true, data: user.friends });
+        let friends = [];
+        for (let i = 0; i < user.friends.length; i++) {
+            let friendId = user.friends[i].userId;
+            let friend = await User.findOne({ _id: friendId });
+            let firstName = friend.firstName;
+            let lastName = friend.lastName;
+            friends.push({
+                firstName: firstName,
+                lastName: lastName,
+                friendId: friendId,
+                userId: userId, //curr user
+            });
+        }
+        return res.status(200).send({ success: true, data: friends });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
