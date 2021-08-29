@@ -54,11 +54,11 @@ router.post("/auth/reverify", ReVerify);
 
 //User Routes ->Abhijeet
 router.get("/user/viewhistory", isLoggedIn, viewHistory);
-router.post("/user/updatehistory", isLoggedIn, addToHistory);
+router.post("/user/updatehistory/:userid", isLoggedIn, addToHistory);
 router.post("/user/applydoctor", isLoggedIn, becomeDoctor);
 router.post("/user/applymerchant", isLoggedIn, becomeMerchant);
 router.post("/user/updateprofile", isLoggedIn, updateProfile);
-router.get("/user/viewprofile", isLoggedIn, getUserProfile);
+router.get("/user/viewprofile/:userid", isLoggedIn, getUserProfile);
 router.post("/user/getnearestmerchant", getNearestStore);
 
 //Doctor Routes ->Abhijeet

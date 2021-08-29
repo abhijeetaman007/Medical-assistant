@@ -18,7 +18,7 @@ export default function Home() {
   const itemCost = useInputState();
   const itemDescription = useInputState();
   const itemTags = useInputState();
-  const [merchantItems, setMerchantItems] = useState([])
+  const [merchantItems, setMerchantItems] = useState([]);
 
   const [historyLoad, setistoryLoad] = useState(true);
   const [detailsLoad, setDetailsLoad] = useState(true);
@@ -44,16 +44,15 @@ export default function Home() {
     }
   };
 
-  const handleItemDelete = (id)=>{
-    try{
-      deleteCall(`/user/merchant/${id}`)
+  const handleItemDelete = (id) => {
+    try {
+      deleteCall(`/user/merchant/${id}`);
       addToast("Deleted Successfully", { appearance: "success" });
-      fetchMerchantData()
-    }
-    catch (err) {
+      fetchMerchantData();
+    } catch (err) {
       addToast("Something Went Wrong", { appearance: "error" });
     }
-}
+  };
 
   const update = useForceUpdate();
 
@@ -71,12 +70,12 @@ export default function Home() {
 
   const fetchUserDetails = async () => {
     try {
-      await get(`/user/viewprofile`).then((data) => {
+      await get(`/user/viewprofile/${auth.user._id}`).then((data) => {
         console.log(data.data);
         setUserDetails(data.data);
         setUserFriends(data.data.friends);
         setUserRequests(data.data.requests);
-        fetchFriends();
+        //fetchFriends();
         setDetailsLoad(false);
         console.log(data.data.isDoctor.isVerified);
 
@@ -130,17 +129,6 @@ export default function Home() {
     }
   };
 
-  const fetchFriends = async () => {
-    try {
-      await get(`/user/getfriends`).then((data) => {
-        console.log(data.data);
-        // setPatients(data.data);
-      });
-    } catch (err) {
-      console.log(err.response);
-    }
-  };
-
   const postHistory = async (e) => {
     e.preventDefault();
     description.handleReset();
@@ -153,7 +141,7 @@ export default function Home() {
     console.log(imageLink);
 
     try {
-      await post(`/user/updatehistory`, {
+      await post(`/user/updatehistory/${auth.user._id}`, {
         imageLink: imageLink,
         description: description.value,
       }).then((data) => {
@@ -167,33 +155,67 @@ export default function Home() {
     fetchHistory();
   };
 
-  const handleMerchantSubmit = async (e)=>{
-    e.preventDefault()
-    if(!itemName.value || !itemQuantity.value || !itemCost.value || !itemDescription.value || !itemTags.value){
-      return addToast("All fields are required",{appearance:"error"})
+  const acceptRequest = async ({ requestId }) => {
+    try {
+      await post(`/user/acceptfriendrequest`, {
+        requestId,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
     }
-    const res = await post('/user/merchant/additem',{
-      itemName:itemName.value,
-      quantity: parseInt(itemQuantity.value),
-      cost:parseInt(itemCost.value),
-      description:itemDescription.value,
-      tags:itemTags.value.split(" ")
-    })
-    if(!res.success){
-      addToast("Something went wrong",{appearance:"error"})
+    fetchUserDetails();
+  };
+  const rejectRequest = async ({ requestId }) => {
+    try {
+      await post(`/user/rejectfriendrequest`, {
+        requestId,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
     }
-    else{
-      addToast("Item Added",{appearance:"success"})
-    }
-  }
+    fetchUserDetails();
+  };
 
-  const fetchMerchantData = ()=> get('/user/merchant/items').then(setMerchantItems)
-  
+  const handleMerchantSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !itemName.value ||
+      !itemQuantity.value ||
+      !itemCost.value ||
+      !itemDescription.value ||
+      !itemTags.value
+    ) {
+      return addToast("All fields are required", { appearance: "error" });
+    }
+    const res = await post("/user/merchant/additem", {
+      itemName: itemName.value,
+      quantity: parseInt(itemQuantity.value),
+      cost: parseInt(itemCost.value),
+      description: itemDescription.value,
+      tags: itemTags.value.split(" "),
+    });
+    if (!res.success) {
+      addToast("Something went wrong", { appearance: "error" });
+    } else {
+      addToast("Item Added", { appearance: "success" });
+    }
+  };
+
+  const fetchMerchantData = () =>
+    get("/user/merchant/items").then(setMerchantItems);
 
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
-    fetchMerchantData()
+    //fetchMerchantData();
   }, []);
 
   if (detailsLoad === true) return <Loading />;
@@ -238,16 +260,41 @@ export default function Home() {
                 />
               </div>
               <div>
-                {detailsLoad === false ? (
-                  <>
-                    <p>{userDetails.firstName + " " + userDetails.lastName}</p>
-                    <p class="title">{userDetails.email}</p>
-                    <p>Followers : {userFriends.length}</p>
-                    <p>Pending Requests : {userRequests.length}</p>
-                  </>
-                ) : (
-                  <Loading />
-                )}
+                <p>{userDetails.firstName + " " + userDetails.lastName}</p>
+                <p class="title">{userDetails.email}</p>
+                <p>Connected To : {userFriends.length}</p>
+                <p>Pending Requests : {userRequests.length}</p>
+              </div>
+              <div>
+                <h3>Pending Requests :</h3>
+                {userDetails.requests.map((req, ind) => {
+                  return (
+                    <p key={ind}>
+                      Name here{" "}
+                      <i
+                        class="far fa-check-circle"
+                        onClick={() => acceptRequest(req.userId)}
+                        style={{ color: "green" }}
+                      ></i>{" "}
+                      <i
+                        class="far fa-times-circle"
+                        style={{ color: "red" }}
+                        onClick={() => rejectRequest(req.userId)}
+                      ></i>{" "}
+                    </p>
+                  );
+                })}
+              </div>
+              <div>
+                <h3>Friends : </h3>
+                {userDetails.friends.map((req, ind) => {
+                  return (
+                    <p key={ind}>
+                      Name here
+                      
+                    </p>
+                  );
+                })}
               </div>
             </div>
             <form onSubmit={postHistory}>
@@ -328,47 +375,79 @@ export default function Home() {
               </>
             ) : (
               <>
-                
-                <h1>Verified Doctor</h1>
-                <div className="freindsHistory">
-                <FriendsList />
-                </div>
+                <h1>Patients Details</h1>
+                {userFriends.map((friend, ind) => {
+                  return (
+                    <div className="freindsHistory">
+                      <FriendsList user={friend} key={ind} />
+                    </div>
+                  );
+                })}
               </>
             )}
           </>
         )}
-        {
-            role === 3 && <>
-              <div className="merchant-dashboard">
-                <main>
-                  <h1>Items</h1>
-                  <div className="items">
-                    {
-                      merchantItems.map(item=>{
-                        return <div className="merchant-item">
-                          <h3>{item.itemName}</h3>
-                          <span>{item.quantity}</span>
-                          <div className="desc">{item.description}</div>
-                          <div className="cost">{item.cost}</div>
-                          <div onClick={()=>handleItemDelete(item._id)} className="delete">Delete Item</div>
+        {role === 3 && (
+          <>
+            <div className="merchant-dashboard">
+              <main>
+                <h1>Items</h1>
+                <div className="items">
+                  {merchantItems.map((item) => {
+                    return (
+                      <div className="merchant-item">
+                        <h3>{item.itemName}</h3>
+                        <span>{item.quantity}</span>
+                        <div className="desc">{item.description}</div>
+                        <div className="cost">{item.cost}</div>
+                        <div
+                          onClick={() => handleItemDelete(item._id)}
+                          className="delete"
+                        >
+                          Delete Item
                         </div>
-                      })
-                    }
-                  </div>
-                    
-                </main>
-                <form onSubmit={handleMerchantSubmit} >
-                 <h1>Add Item</h1>
-                  <input placeholder="Name" value={itemName.value} onChange={itemName.handleChange} type="text" />
-                  <input placeholder="Quantity" value={itemQuantity.value} onChange={itemQuantity.handleChange} type="text" />
-                  <input placeholder="Cost" value={itemCost.value} onChange={itemCost.handleChange} type="text" />
-                  <input placeholder="Description" value={itemDescription.value} onChange={itemDescription.handleChange} type="text" />
-                  <input placeholder="Tags (Space Separated)" value={itemTags.value} onChange={itemTags.handleChange} type="text" />
-                  <button className="btn">Submit</button>
-                </form>
-              </div>
-            </>
-        }
+                      </div>
+                    );
+                  })}
+                </div>
+              </main>
+              <form onSubmit={handleMerchantSubmit}>
+                <h1>Add Item</h1>
+                <input
+                  placeholder="Name"
+                  value={itemName.value}
+                  onChange={itemName.handleChange}
+                  type="text"
+                />
+                <input
+                  placeholder="Quantity"
+                  value={itemQuantity.value}
+                  onChange={itemQuantity.handleChange}
+                  type="text"
+                />
+                <input
+                  placeholder="Cost"
+                  value={itemCost.value}
+                  onChange={itemCost.handleChange}
+                  type="text"
+                />
+                <input
+                  placeholder="Description"
+                  value={itemDescription.value}
+                  onChange={itemDescription.handleChange}
+                  type="text"
+                />
+                <input
+                  placeholder="Tags (Space Separated)"
+                  value={itemTags.value}
+                  onChange={itemTags.handleChange}
+                  type="text"
+                />
+                <button className="btn">Submit</button>
+              </form>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

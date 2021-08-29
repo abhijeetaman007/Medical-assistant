@@ -25,8 +25,8 @@ async function viewHistory(req, res) {
 //User adding his own medical record --- unverified documents
 async function addToHistory(req, res) {
     try {
-        console.log("History : " + req.user);
-        let userId = req.user.id;
+        //console.log("History : " + req.user);
+        let userId = req.params.userid;
         console.log(req.user);
         let user = await User.findById({ _id: userId });
 
@@ -198,7 +198,7 @@ async function updateProfile(req, res) {
 // get user profile
 async function getUserProfile(req, res) {
     try {
-        let userId = req.user.id;
+        let userId = req.params.userid;
         let user = await User.findById({ _id: userId }).populate(
             "isDoctor isMerchant"
         );
