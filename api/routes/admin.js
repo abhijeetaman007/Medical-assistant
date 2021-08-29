@@ -67,7 +67,7 @@ async function getAllMerchantsToBeVerified(req, res) {
         let obj = [];
         for (let i = 0; i < merchants.length; i++) {
             let merchantuserId = merchants[i].userId;
-            let user = await User.findOne({ _id: merchantuserID });
+            let user = await User.findOne({ _id: merchantuserId });
             obj.push({
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -89,7 +89,7 @@ async function getAllDoctorsToBeVerified(req, res) {
         let obj = [];
         for (let i = 0; i < doctors.length; i++) {
             let doctoruserId = doctors[i].userId;
-            let user = await User.findOne({ _id: doctoruserID });
+            let user = await User.findOne({ _id: doctoruserId });
             obj.push({
                 firstName: user.firstName,
                 lastName: user.lastName,

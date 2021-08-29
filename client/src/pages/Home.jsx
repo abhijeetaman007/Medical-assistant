@@ -34,7 +34,7 @@ export default function Home() {
   const [location, setLocation] = useState(null)
 
   const [adminDataLoading, setAdminDataLoading] = useState(true)
-  const [adminData, setAdminData] = useState([])
+  const [adminData, setAdminData] = useState([[],[]])
 
   const handleSaveDocument = async (folderName, fileName, ref) => {
     if (!ref || !ref.current) return;
@@ -198,9 +198,10 @@ export default function Home() {
   const fetchAdminDetails = async ()=>{
     try{
       const data = await Promise.all([get('/user/admin/merchants'),get("/user/admin/doctors")])
-      setAdminDataLoading(false)
       setAdminData(data)
+      setAdminDataLoading(false)
     }
+
     catch(err){
       addToast("Something went wrong",{appearance:"error"})
     }
@@ -402,17 +403,29 @@ export default function Home() {
             <h1>
             Merchant Applications
             <div className="applications">
-              <div className="item">
+              {adminData[0].data.map(item=>{
+                return           <div className="item">
                 <a href=""><i className="fa fa-eye"></i></a>
-                <div className="name">Akhil</div>
+                <div className="name">{item.firstName +" " + item.lastName}</div>
                 <button className="verify">Verify</button>
               </div>
+              })}
             </div>
             </h1>
             </section>
             <section>
             <h1>
             Doctor Applications
+            <div className="applications">
+            {adminData[1].data.map(item=>{
+                return   <div className="item">
+                <a href=""><i className="fa fa-eye"></i></a>
+                <div className="name">{item.firstName +" " + item.lastName}</div>
+                <button className="verify">Verify</button>
+              </div>
+              })}
+    </div>
+
             </h1> 
             </section>
             </>}
