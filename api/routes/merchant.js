@@ -36,7 +36,7 @@ async function addItem(req, res) {
 }
 async function deleteItem(req, res) {
     try {
-        let { itemId } = req.body;
+        let { itemId } = req.params;
         let item = await Item.findOne({ _id: itemId });
         if (!item) {
             return res.send({ success: false, msg: "Item doesnt exist" });
