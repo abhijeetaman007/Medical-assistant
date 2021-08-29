@@ -67,13 +67,13 @@ async function getAllMerchantsToBeVerified(req, res) {
         let obj = [];
         for (let i = 0; i < merchants.length; i++) {
             let merchantuserId = merchants[i].userId;
-            let user = await User.findOne({ _id: merchantuserID });
+            let user = await User.findOne({ _id: merchantuserId });
             obj.push({
                 firstName: user.firstName,
                 lastName: user.lastName,
                 userId: user._id,
                 merchantId: merchants[i]._id,
-                certificateLink: merchant.certificateLink,
+                certificateLink: merchants[i].certificateLink,
             });
         }
         return res.status(200).send({ success: true, data: obj });
@@ -90,13 +90,13 @@ async function getAllDoctorsToBeVerified(req, res) {
         let obj = [];
         for (let i = 0; i < doctors.length; i++) {
             let doctoruserId = doctors[i].userId;
-            let user = await User.findOne({ _id: doctoruserID });
+            let user = await User.findOne({ _id: doctoruserId });
             obj.push({
                 firstName: user.firstName,
                 lastName: user.lastName,
                 userId: user._id,
                 doctorId: doctors[i]._id,
-                certificateLink: doctor.certificateLink,
+                certificateLink: doctors[i].certificateLink,
             });
         }
         return res.status(200).send({ success: true, data: obj });

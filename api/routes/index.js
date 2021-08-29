@@ -78,7 +78,7 @@ router.get(
     verifyDoctor
 );
 router.get(
-    "/user/admin/verifydoctor/:merchantId",
+    "/user/admin/verifymerchant/:merchantId",
     isLoggedIn,
     isAdmin,
     verifyMerchant
