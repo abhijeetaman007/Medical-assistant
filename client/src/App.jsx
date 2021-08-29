@@ -7,7 +7,6 @@ import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
 import VerifyMail from "./pages/auth/VerifyMail";
 
-
 function App() {
   return (
     <React.Fragment>
