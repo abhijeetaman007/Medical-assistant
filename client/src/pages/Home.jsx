@@ -12,6 +12,8 @@ export default function Home() {
   const description = useInputState();
   const address = useInputState();
   const { addToast } = useToasts();
+  const addFriendEmail = useInputState();
+  const removeFriendEmail = useInputState();
 
   const itemName = useInputState();
   const itemQuantity = useInputState();
@@ -184,6 +186,42 @@ export default function Home() {
     fetchUserDetails();
   };
 
+  
+  
+  const addFriend = async ( e) => {
+    e.preventDefault();
+    addFriendEmail.handleReset();
+    try {
+      await post(`/user/addfriend`, {
+        friendEmail : addFriendEmail.value,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+
+  const removeFriend = async (e) => {
+    e.preventDefault();
+    removeFriendEmail.handleReset();
+    try {
+      await post(`/user/removefriend`, {
+        rfriendEmail : removeFriendEmail.value,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+
   const handleMerchantSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -270,7 +308,7 @@ export default function Home() {
                 {userDetails.requests.map((req, ind) => {
                   return (
                     <p key={ind}>
-                      Name here{" "}
+                      {req.email}
                       <i
                         class="far fa-check-circle"
                         onClick={() => acceptRequest(req.userId)}
@@ -288,14 +326,29 @@ export default function Home() {
               <div>
                 <h3>Friends : </h3>
                 {userDetails.friends.map((req, ind) => {
-                  return (
-                    <p key={ind}>
-                      Name here
-                      
-                    </p>
-                  );
+                  return <p key={ind}>{req.email}</p>;
                 })}
               </div>
+            </div>
+            <div className="textfields">
+            <form onSubmit={addFriend}>
+              <input
+                value={addFriendEmail.value}
+                onChange={addFriendEmail.handleChange}
+                type="text"
+                placeholder="Add Friend"
+              />
+              <button className="btn">Send</button>
+            </form>
+            <form onSubmit={removeFriend}>
+              <input
+                value={removeFriendEmail.value}
+                onChange={removeFriendEmail.handleChange}
+                type="text"
+                placeholder="Remove Friend"
+              />
+              <button className="btn">Send</button>
+            </form>
             </div>
             <form onSubmit={postHistory}>
               <h3>Upload History</h3>

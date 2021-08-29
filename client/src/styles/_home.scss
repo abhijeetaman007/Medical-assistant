@@ -148,6 +148,28 @@
   main {
     flex: 6;
   }
+  .textfields{
+    width : 80%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+    form{
+      width: 40%;
+      button {
+        
+        cursor: pointer;
+    transition: 0.2s all;
+    font-size: 1rem;
+    text-align: left;
+    
+
+    &:hover {
+      color: $blue;
+    }
+      }
+    }
+  }
 
   button {
     cursor: pointer;
