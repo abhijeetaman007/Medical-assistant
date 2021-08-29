@@ -13,6 +13,13 @@ export default function Home() {
   const address = useInputState();
   const { addToast } = useToasts();
 
+  const itemName = useInputState();
+  const itemQuantity = useInputState();
+  const itemCost = useInputState();
+  const itemDescription = useInputState();
+  const itemTags = useInputState();
+  const [merchantItems, setMerchantItems] = useState([])
+
   const [historyLoad, setistoryLoad] = useState(true);
   const [detailsLoad, setDetailsLoad] = useState(true);
   const [myhistory, setMyHistory] = useState([]);
@@ -149,9 +156,33 @@ export default function Home() {
     fetchHistory();
   };
 
+  const handleMerchantSubmit = async (e)=>{
+    e.preventDefault()
+    if(!itemName.value || !itemQuantity.value || !itemCost.value || !itemDescription.value || !itemTags.value){
+      return addToast("All fields are required",{appearance:"error"})
+    }
+    const res = await post('/user/merchant/additem',{
+      itemName:itemName.value,
+      quantity: parseInt(itemQuantity.value),
+      cost:parseInt(itemCost.value),
+      description:itemDescription.value,
+      tags:itemTags.value.split(" ")
+    })
+    if(!res.success){
+      addToast("Something went wrong",{appearance:"error"})
+    }
+    else{
+      addToast("Item Added",{appearance:"success"})
+    }
+  }
+
+  const fetchMerchantData = ()=> get('/user/merchant/items').then(setMerchantItems)
+  
+
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
+    fetchMerchantData()
   }, []);
 
   if (detailsLoad === true) return <Loading />;
@@ -295,6 +326,37 @@ export default function Home() {
             )}
           </>
         )}
+        {
+            role === 3 && <>
+              <div className="merchant-dashboard">
+                <main>
+                  <h1>Items</h1>
+                  <div className="items">
+                    {
+                      merchantItems.map(item=>{
+                        return <div className="merchant-item">
+                          <h3>{item.itemName}</h3>
+                          <span>{item.quantity}</span>
+                          <div className="desc">{item.description}</div>
+                          <div className="cost">{item.cost}</div>
+                        </div>
+                      })
+                    }
+                  </div>
+                    
+                </main>
+                <form onSubmit={handleMerchantSubmit} >
+                 <h1>Add Item</h1>
+                  <input placeholder="Name" value={itemName.value} onChange={itemName.handleChange} type="text" />
+                  <input placeholder="Quantity" value={itemQuantity.value} onChange={itemQuantity.handleChange} type="text" />
+                  <input placeholder="Cost" value={itemCost.value} onChange={itemCost.handleChange} type="text" />
+                  <input placeholder="Description" value={itemDescription.value} onChange={itemDescription.handleChange} type="text" />
+                  <input placeholder="Tags (Space Separated)" value={itemTags.value} onChange={itemTags.handleChange} type="text" />
+                  <button className="btn">Submit</button>
+                </form>
+              </div>
+            </>
+        }
       </main>
     </div>
   );

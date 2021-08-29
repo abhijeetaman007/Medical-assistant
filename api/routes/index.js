@@ -41,7 +41,7 @@ const { viewPatientHistory } = require("./doctor");
 
 const { verifyDoctor, verifyMerchant } = require("./admin");
 
-const {  addItem, deleteItem, editAddress } = require("./merchant");
+const {  getAllItems,addItem, deleteItem, editAddress } = require("./merchant");
 
 //Auth Routes ->Rhea
 router.post("/auth/register", Register);
@@ -100,6 +100,7 @@ router.get("/user/viewmerchants", isLoggedIn, viewMerchants);
 router.get("/user/viewdoctors", isLoggedIn, viewDoctors);
 
 //Merchant Routes ->Rhea
+router.get("/user/merchant/items", isLoggedIn, isMerchant, getAllItems);
 router.post("/user/merchant/additem", isLoggedIn, isMerchant, addItem);
 router.delete("/user/merchant/deleteitem", isLoggedIn, isMerchant, deleteItem);
 router.post("/user/merchant/editaddress", isLoggedIn, isMerchant, editAddress);

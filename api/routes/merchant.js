@@ -4,6 +4,11 @@ const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
 const Item = require("../models/Item");
 
+async function getAllItems (req,res ) {
+   const data = await Item.find({merchantId:req.user.isMerchant.merchantId})
+    res.status(200).json(data)
+}
+
 async function addItem(req, res) {
     try {
         let { itemName, quantity, cost, description, tags } = req.body;
@@ -78,4 +83,5 @@ module.exports = {
     addItem,
     deleteItem,
     editAddress,
+    getAllItems
 };
