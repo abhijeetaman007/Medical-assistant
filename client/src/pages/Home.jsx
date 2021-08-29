@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { get, post } from "../utils/requests";
+import { deleteCall, get, post } from "../utils/requests";
 import useInputState from "../hooks/useInputState";
 import { useToasts } from "react-toast-notifications";
 import useForceUpdate from "../hooks/useForceUpdate";
@@ -43,6 +43,17 @@ export default function Home() {
       return "";
     }
   };
+
+  const handleItemDelete = (id)=>{
+    try{
+      deleteCall(`/user/merchant/${id}`)
+      addToast("Deleted Successfully", { appearance: "success" });
+      fetchMerchantData()
+    }
+    catch (err) {
+      addToast("Something Went Wrong", { appearance: "error" });
+    }
+}
 
   const update = useForceUpdate();
 
@@ -339,6 +350,7 @@ export default function Home() {
                           <span>{item.quantity}</span>
                           <div className="desc">{item.description}</div>
                           <div className="cost">{item.cost}</div>
+                          <div onClick={()=>handleItemDelete(item._id)} className="delete">Delete Item</div>
                         </div>
                       })
                     }
