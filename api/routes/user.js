@@ -327,20 +327,20 @@ async function getFriends(req, res) {
 }
 
 async function getNearestStore(req, res) {
-    // let itemName = req.body.itemName;
-    let loc = req.body.location;
-    let currentloc = await geocoder.geocode(loc);
+    let currentloc = req.body.location;
+    // let currentloc = await geocoder.geocode(loc);
     console.log("Curr location " + currentloc);
 
     let merchants = await Merchant.find({
+
         location: {
             $near: {
                 $maxDistance: 15000, //Searching in a range of 15 kms
                 $geometry: {
                     type: "Point",
                     coordinates: [
-                        currentloc[0].longitude,
-                        currentloc[0].latitude,
+                        currentloc[0],
+                        currentloc[1],
                     ],
                 },
             },
