@@ -48,3 +48,25 @@
         color: orangered;
     }
 }
+
+.verify-email{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    h1{
+        font-size: 3rem;
+    }
+
+
+    .error{
+        font-size: 4rem;
+        color: orangered;
+
+    }
+
+    .btn{
+        margin-top: 1rem;
+    }
+}

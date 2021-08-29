@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound"
 import Home from "./pages/Home"
 import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
+import VerifyMail from "./pages/auth/VerifyMail";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
+        <Route path="/verifyemail/:token" component={VerifyMail} />
         <PrivateRoute exact path={'/'} component={Home} />
         <Route path="*" component={NotFound} />
       </Switch>
