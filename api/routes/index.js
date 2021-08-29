@@ -41,7 +41,7 @@ const { viewPatientHistory } = require("./doctor");
 
 const { verifyDoctor, verifyMerchant ,getAllMerchantsToBeVerified,getAllDoctorsToBeVerified } = require("./admin");
 
-const {  getAllItems, addItem, deleteItem, editAddress} = require("./merchant");
+const { getAllItems, addItem, deleteItem, editAddress } = require("./merchant");
 
 //Auth Routes ->Rhea
 router.post("/auth/register", Register);
@@ -78,27 +78,23 @@ router.get(
     verifyDoctor
 );
 router.get(
-    "/user/admin/verifydoctor/:merchantId",
+    "/user/admin/verifymerchant/:merchantId",
     isLoggedIn,
     isAdmin,
     verifyMerchant
 );
-
 router.get(
-    "/user/admin/merchants",
+    "/user/admin/getmerchant",
     isLoggedIn,
     isAdmin,
     getAllMerchantsToBeVerified
 );
-
 router.get(
-    "/user/admin/doctors",
+    "/user/admin/getdoctor",
     isLoggedIn,
     isAdmin,
     getAllDoctorsToBeVerified
 );
-
-
 //User Routes ->Rhea
 router.post("/user/addfriend", isLoggedIn, addFriend);
 router.post("/user/removefriend", isLoggedIn, removeFriend);
@@ -117,7 +113,12 @@ router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
 //Merchant Routes ->Rhea
 router.get("/user/merchant/items", isLoggedIn, isMerchant, getAllItems);
 router.post("/user/merchant/additem", isLoggedIn, isMerchant, addItem);
-router.delete("/user/merchant/deleteitem/:itemId", isLoggedIn, isMerchant, deleteItem);
+router.delete(
+    "/user/merchant/deleteitem/:itemId",
+    isLoggedIn,
+    isMerchant,
+    deleteItem
+);
 router.post("/user/merchant/editaddress", isLoggedIn, isMerchant, editAddress);
 
 module.exports = router;

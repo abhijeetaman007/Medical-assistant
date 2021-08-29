@@ -181,6 +181,7 @@ export default function Home() {
       tags:itemTags.value.split(" ")
     })
     if(!res.success){
+      fetchMerchantData()
       addToast("Something went wrong",{appearance:"error"})
     }
     else{
@@ -189,17 +190,17 @@ export default function Home() {
   }
 
   const fetchMerchantData = ()=> get('/user/merchant/items').then((data)=>{
-    setMerchantItems(data)
-    console.log(data);
+    setMerchantItems(data.data)
   }).catch(err => {
     console.log(err);
   }) 
 
   const fetchAdminDetails = async ()=>{
     try{
-      const data = await Promise.all([get('/user/admin/merchants'),get("/user/admin/doctors")])
+      const data = await Promise.all([get('/user/admin/getmerchant'),get("/user/admin/getdoctor")])
       setAdminData(data)
       setAdminDataLoading(false)
+      console.log(data);
     }
 
     catch(err){
@@ -213,6 +214,28 @@ export default function Home() {
     }, ()=>{
       addToast("Something went wrong",{appearance:"error"})
     });
+  }
+
+  const handleVerifyDoc = async (id)=>{
+    try{
+      await get(`/user/admin/verifydoctor/${id}`)
+      fetchAdminDetails()
+      addToast("Verifeid Successfully",{appearance:"success"})
+    }
+    catch(err){
+      addToast("Something went wrong",{appearance:"error"})
+    }
+  }
+
+  const handleVerifyMerchant = async (id)=>{
+    try{
+      await get(`/user/admin/verifymerchant/${id}`)
+      fetchAdminDetails()
+      addToast("Verifeid Successfully",{appearance:"success"})
+    }
+    catch(err){
+      addToast("Something went wrong",{appearance:"error"})
+    }
   }
   
 
@@ -353,15 +376,15 @@ export default function Home() {
 
                 </section>
                 <main>
-                  <h1>Items</h1>
-                  <div className="items">
-                  <div className="merchant-item">
+                { merchantItems.length && <> <h1>Items</h1>
+                   <div className="items">
+                  {/* <div className="merchant-item">
                           <h3>Test</h3>
                           <span>25</span>
                           <div className="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate labore veniam, quaerat, ab sunt sequi mollitia velit rem enim accusamus tenetur</div>
                           <div className="cost">{35} /-</div>
                           <div className="delete">Delete Item</div>
-                        </div>
+                        </div> */}
                     {
                       merchantItems.map(item=>{
                         return <div className="merchant-item">
@@ -373,7 +396,7 @@ export default function Home() {
                         </div>
                       })
                     }
-                  </div>
+                  </div> </>}
                   
                 </main>
                 </div>
@@ -405,9 +428,9 @@ export default function Home() {
             <div className="applications">
               {adminData[0].data.map(item=>{
                 return           <div className="item">
-                <a href=""><i className="fa fa-eye"></i></a>
+                <a href={item.certificateLink}><i className="fa fa-eye"></i></a>
                 <div className="name">{item.firstName +" " + item.lastName}</div>
-                <button className="verify">Verify</button>
+                <button onClick={()=>handleVerifyMerchant(item.merchantId)} className="verify">Verify</button>
               </div>
               })}
             </div>
@@ -419,9 +442,9 @@ export default function Home() {
             <div className="applications">
             {adminData[1].data.map(item=>{
                 return   <div className="item">
-                <a href=""><i className="fa fa-eye"></i></a>
+                <a href={item.certificateLink}><i className="fa fa-eye"></i></a>
                 <div className="name">{item.firstName +" " + item.lastName}</div>
-                <button className="verify">Verify</button>
+                <button onClick={()=>handleVerifyDoc(item.doctorId)} className="verify">Verify</button>
               </div>
               })}
     </div>

@@ -73,6 +73,7 @@ async function getAllMerchantsToBeVerified(req, res) {
                 lastName: user.lastName,
                 userId: user._id,
                 merchantId: merchants[i]._id,
+                certificateLink: merchants[i].certificateLink,
             });
         }
         return res.status(200).send({ success: true, data: obj });
