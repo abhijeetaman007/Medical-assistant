@@ -39,7 +39,12 @@ const {
 
 const { viewPatientHistory } = require("./doctor");
 
-const { verifyDoctor, verifyMerchant } = require("./admin");
+const {
+    verifyDoctor,
+    verifyMerchant,
+    getAllMerchantsToBeVerified,
+    getAllDoctorsToBeVerified,
+} = require("./admin");
 
 const { getAllItems, addItem, deleteItem, editAddress } = require("./merchant");
 
