@@ -5,6 +5,7 @@ import useInputState from "../hooks/useInputState";
 import { useToasts } from "react-toast-notifications";
 import useForceUpdate from "../hooks/useForceUpdate";
 import { storeFile } from "../utils/utilities";
+import Loading from "../components/Loading";
 
 export default function Home() {
   const auth = useAuth();
@@ -17,6 +18,7 @@ export default function Home() {
   const itemCost = useInputState();
   const itemDescription = useInputState();
   const itemTags = useInputState();
+  const merchantNewAddress = useInputState();
   const [merchantItems, setMerchantItems] = useState([])
 
   const [historyLoad, setistoryLoad] = useState(true);
@@ -182,13 +184,23 @@ export default function Home() {
     }
   }
 
-  const fetchMerchantData = ()=> get('/user/merchant/items').then(setMerchantItems)
+  const fetchMerchantData = ()=> get('/user/merchant/items').then((data)=>{
+    setMerchantItems(data)
+    console.log(data);
+  }).catch(err => {
+    console.log(err);
+  }) 
+
+  const fetchAdminDetails = ()=>{
+
+  }
   
 
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
     fetchMerchantData()
+    fetchAdminDetails()
   }, []);
 
   return (
@@ -200,9 +212,10 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
-       {  <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
-       { <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>}
-          <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> I am a Doctor</button>
+        { auth.user.isAdmin && <button onClick={() => setRole(4)}>Admin Panel</button>}
+       { auth.user.isMerchant.isVerified && <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
+       { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> Become Merchant</button>}
+        { !auth.user.isDoctor.isVerified && <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> Become Doctor</button>}
           <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
           <button className="logout" onClick={auth.logout}>
             <i class="fas fa-sign-out-alt"></i> Logout
@@ -308,9 +321,26 @@ export default function Home() {
         {
             role === 3 && <>
               <div className="merchant-dashboard">
+                <div className="top">
+                <h1>Merchant Dashboard</h1>
+                      <section>
+                  <form>
+                  <h3>Edit Address</h3>
+                                      <input className="input" type="text" value={merchantNewAddress.value} onChange={merchantNewAddress.handleChange} />
+                  <button className="btn">Submit</button>
+                  </form>
+
+                </section>
                 <main>
                   <h1>Items</h1>
                   <div className="items">
+                  <div className="merchant-item">
+                          <h3>Test</h3>
+                          <span>25</span>
+                          <div className="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate labore veniam, quaerat, ab sunt sequi mollitia velit rem enim accusamus tenetur</div>
+                          <div className="cost">{35} /-</div>
+                          <div className="delete">Delete Item</div>
+                        </div>
                     {
                       merchantItems.map(item=>{
                         return <div className="merchant-item">
@@ -323,8 +353,9 @@ export default function Home() {
                       })
                     }
                   </div>
-                    
+                  
                 </main>
+                </div>
                 <form onSubmit={handleMerchantSubmit} >
                  <h1>Add Item</h1>
                   <input placeholder="Name" value={itemName.value} onChange={itemName.handleChange} type="text" />
@@ -336,6 +367,36 @@ export default function Home() {
                 </form>
               </div>
             </>
+        }
+        {
+          role === 4 && <div className="admin">
+            {
+            // adminDataLoading && 
+            <div className="screen-center">
+              <Loading/>
+            </div> }
+            {
+            //  !adminDataLoading &&  
+            <>
+            <section>
+            <h1>
+            Merchant Applications
+            <div className="applications">
+              <div className="item">
+                <a href=""><i className="fa fa-eye"></i></a>
+                <div className="name">Akhil</div>
+                <button className="verify">Verify</button>
+              </div>
+            </div>
+            </h1>
+            </section>
+            <section>
+            <h1>
+            Doctor Applications
+            </h1> 
+            </section>
+            </>}
+          </div>
         }
       </main>
     </div>

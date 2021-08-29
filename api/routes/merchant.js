@@ -6,7 +6,7 @@ const Item = require("../models/Item");
 
 async function getAllItems (req,res ) {
    const data = await Item.find({merchantId:req.user.isMerchant.merchantId})
-    res.status(200).json(data)
+res.status(200).json(data)
 }
 
 async function addItem(req, res) {
