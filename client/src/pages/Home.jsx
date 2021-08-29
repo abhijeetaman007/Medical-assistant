@@ -17,6 +17,7 @@ export default function Home() {
   const itemCost = useInputState();
   const itemDescription = useInputState();
   const itemTags = useInputState();
+  const [merchantItems, setMerchantItems] = useState([])
 
   const [historyLoad, setistoryLoad] = useState(true);
   const [myhistory, setMyHistory] = useState([]);
@@ -170,9 +171,13 @@ export default function Home() {
     }
   }
 
+  const fetchMerchantData = ()=> get('/user/merchant/items').then(setMerchantItems)
+  
+
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
+    fetchMerchantData()
   }, []);
 
   return (
@@ -184,8 +189,8 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
-       { auth.user.isMerchant.isVerified || true && <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
-       { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>}
+       {  <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
+       { <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>}
           <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> I am a Doctor</button>
           <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
           <button className="logout" onClick={auth.logout}>
@@ -294,6 +299,18 @@ export default function Home() {
               <div className="merchant-dashboard">
                 <main>
                   <h1>Items</h1>
+                  <div className="items">
+                    {
+                      merchantItems.map(item=>{
+                        return <div className="merchant-item">
+                          <h3>{item.itemName}</h3>
+                          <span>{item.quantity}</span>
+                          <div className="desc">{item.description}</div>
+                          <div className="cost">{item.cost}</div>
+                        </div>
+                      })
+                    }
+                  </div>
                     
                 </main>
                 <form onSubmit={handleMerchantSubmit} >
