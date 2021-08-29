@@ -88,13 +88,13 @@ const User = mongoose.Schema({
     //On acception of a friend request by X ,the userID of X will be put in friends
     friends: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId }
+            email: { type: String },
         },
     ],
     //Stores userId of people who have requested current user to be a friend->after user has decided to accept or reject we remove the userID from the array
     requests: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId }
+            email: { type: String },
         },
     ],
     token: {
