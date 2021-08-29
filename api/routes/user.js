@@ -25,7 +25,7 @@ async function viewHistory(req, res) {
 //User adding his own medical record --- unverified documents
 async function addToHistory(req, res) {
     try {
-        console.log("History : "+req.user)
+        console.log("History : " + req.user);
         let userId = req.user.id;
         console.log(req.user);
         let user = await User.findById({ _id: userId });
@@ -122,6 +122,7 @@ async function becomeDoctor(req, res) {
         let newDoctor = new Doctor({
             userId,
             certificateLink: req.body.certificateLink,
+            isVerified: false,
         });
         await newDoctor.save();
         return res
@@ -135,9 +136,9 @@ async function becomeDoctor(req, res) {
 
 //User applying to become merchant
 async function becomeMerchant(req, res) {
-    console.log(req.body)
+    console.log(req.body);
     try {
-        console.log("Applying for merchant")
+        console.log("Applying for merchant");
         let userId = req.user.id;
         console.log(userId);
         let merchant = await Merchant.findOne({ userId: userId });
@@ -147,9 +148,10 @@ async function becomeMerchant(req, res) {
                 .send({ success: false, msg: "Already applied for Merchant" });
         }
         let newMerchant = new Merchant({
-            userId:userId,
+            userId: userId,
             address: req.body.address,
             certificateLink: req.body.certificateLink,
+            isVerified: false,
         });
         console.log(newMerchant);
         await newMerchant.save();
@@ -222,15 +224,13 @@ async function addFriend(req, res) {
         //if friends request already sent by me, send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
             if (friend.requests[i].userId == myId) {
-                return res
-                    .status(200)
-                    .send({
-                        success: false,
-                        data: "Friend Request Already sent",
-                    });
+                return res.status(200).send({
+                    success: false,
+                    data: "Friend Request Already sent",
+                });
             }
         }
-        friend.requests.push({userId:myId});
+        friend.requests.push({ userId: myId });
         await friend.save();
         return res
             .status(200)
@@ -328,23 +328,26 @@ async function getFriends(req, res) {
 
 async function getNearestStore(req, res) {
     // let itemName = req.body.itemName;
-    let loc = req.body.location
+    let loc = req.body.location;
     let currentloc = await geocoder.geocode(loc);
-    console.log("Curr location "+currentloc)
+    console.log("Curr location " + currentloc);
 
     let merchants = await Merchant.find({
-        location:{
-            $near:{
-                $maxDistance: 15000,       //Searching in a range of 15 kms
-                $geometry:{
-                    type:"Point",
-                    coordinates:[currentloc[0].longitude, currentloc[0].latitude],
+        location: {
+            $near: {
+                $maxDistance: 15000, //Searching in a range of 15 kms
+                $geometry: {
+                    type: "Point",
+                    coordinates: [
+                        currentloc[0].longitude,
+                        currentloc[0].latitude,
+                    ],
                 },
-            }
-        }
+            },
+        },
     });
-    console.log("Merchants : ")
-    console.log(merchants)
+    console.log("Merchants : ");
+    console.log(merchants);
 
     if (merchants) {
         return res.status(200).send({ success: true, data: merchants });
@@ -388,5 +391,5 @@ module.exports = {
     getFriends,
     viewDoctors,
     viewMerchants,
-    getNearestStore
+    getNearestStore,
 };
