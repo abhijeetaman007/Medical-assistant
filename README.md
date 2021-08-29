@@ -33,3 +33,13 @@
 
 -   Medical merchants/store can connect to patients by showing available stocks for wide veriety of medicines or other medical equipments providing ease for patients to locate near by store with available stock.
 -   Merchants can any time update stocks.
+
+<hr/>
+
+## Setting Up Project
+### Frontend
+```npm install```  (To install package)
+```npm start```    (To start frontend)
+### Backend
+```npm install```  (To install package)
+```npm start```    (To start frontend)
