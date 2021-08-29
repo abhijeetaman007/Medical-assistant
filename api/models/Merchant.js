@@ -12,10 +12,6 @@ const Merchant = mongoose.Schema({
         type: String,
         required: true,
     },
-    address: {
-        type: String,
-        required: true,
-    },
     location: {
         type: {
             type: String,
@@ -29,35 +25,7 @@ const Merchant = mongoose.Schema({
         city: {
             type: String,
         },
-    },
-    stocks: [
-        {
-            // itemId: {
-            //     type: String,
-            //     unique: true,
-            // },
-            itemName: {
-                type: String,
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                default: 0,
-            },
-            description: {
-                type: String,
-            },
-            tags: [
-                {
-                    type: String,
-                },
-            ],
-            cost: {
-                type: Number,
-            },
-        },
-    ],
+    }
 });
 
 Merchant.index({ location: "2dsphere" });

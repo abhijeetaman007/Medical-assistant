@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+//Patients=Friends
+
 const isLoggedIn = require("../middleware/isLoggedIn");
 const isAdmin = require("../middleware/isAdmin");
 const isDoctor = require("../middleware/isDoctor");
@@ -13,7 +15,7 @@ const {
     ForgotPassword,
     VerifyEmail,
     ReVerify,
-    getUserFromToken
+    getUserFromToken,
 } = require("./auth");
 
 const {
@@ -35,11 +37,11 @@ const {
     getNearestStore,
 } = require("./user");
 
-const { viewPatientHistory, viewPatients } = require("./doctor");
+const { viewPatientHistory} = require("./doctor");
 
 const { verifyDoctor, verifyMerchant } = require("./admin");
 
-const { updateMerchantStocks } = require("./merchant");
+const { editItem, addItem, removeItem } = require("./merchant");
 
 //Auth Routes ->Rhea
 router.post("/auth/register", Register);
@@ -57,7 +59,7 @@ router.post("/user/applydoctor", isLoggedIn, becomeDoctor);
 router.post("/user/applymerchant", isLoggedIn, becomeMerchant);
 router.post("/user/updateprofile", isLoggedIn, updateProfile);
 router.get("/user/viewprofile", isLoggedIn, getUserProfile);
-router.post("/user/getnearestmerchant",getNearestStore)
+router.post("/user/getnearestmerchant", getNearestStore);
 
 //Doctor Routes ->Abhijeet
 // (:req.user.id is userID of Doctor, pass patient userId in body)
@@ -67,7 +69,6 @@ router.post(
     isDoctor,
     viewPatientHistory
 );
-router.get("/user/doctor/viewpatients", isLoggedIn, isDoctor, viewPatients);
 
 //Admin Routes ->Abhijeet
 router.get(
@@ -99,5 +100,8 @@ router.get("/user/viewmerchants", isLoggedIn, viewDoctors);
 router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
 
 //Merchant Routes ->Rhea
+router.post("/user/merchant/additem", isLoggedIn, isMerchant, addItem);
+router.delete("/user/merchant/removeitem", isLoggedIn, isMerchant, removeItem);
+router.post("/user/merchant/editItem", isLoggedIn, isMerchant, editItem);
 
 module.exports = router;

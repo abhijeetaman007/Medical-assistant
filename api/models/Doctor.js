@@ -9,10 +9,7 @@ const Doctor = mongoose.Schema({
     certificateLink: {
         type: String,
         required: true,
-    },
-    patients:[{
-        type: mongoose.Schema.Types.ObjectId, ref: "user" 
-    }]
+    }
 });
 
 module.exports = mongoose.model("doctor", Doctor);

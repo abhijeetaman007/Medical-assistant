@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const Doctor = require("../models/Doctor");
-const Merchant = require("../models/Merchant");
 
 // To view history of particular patient
 async function viewPatientHistory(req, res) {
@@ -21,37 +19,10 @@ async function viewPatientHistory(req, res) {
                     .send({ success: true, data: patient.history });
             }
         }
-        return res
-            .status(404)
-            .send({
-                success: false,
-                msg: "You dont have access to patient's medical history",
-            });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send({ success: false, msg: "Server Error" });
-    }
-}
-
-// To view all patients of a doctor
-async function viewPatients(req, res) {
-    try {
-        let userId = req.user.id;
-        let user = await User.findById({ _id: userId });
-        if (!user) {
-            return res
-                .status(404)
-                .send({ success: false, msg: "User doesn't exists" });
-        }
-        if (!user.isDoctor.isVerified) {
-            return res
-                .status(404)
-                .send({ success: false, msg: "You are not a doctor" });
-        }
-        let doctor = await Doctor.findOne({ userId: userId }).populate(
-            "patients"
-        );
-        return res.status(200).send({ success: true, data: doctor.patients });
+        return res.status(404).send({
+            success: false,
+            msg: "You dont have access to patient's medical history",
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
@@ -60,5 +31,4 @@ async function viewPatients(req, res) {
 
 module.exports = {
     viewPatientHistory,
-    viewPatients,
 };
