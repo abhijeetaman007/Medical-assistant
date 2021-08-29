@@ -8,6 +8,12 @@ const Merchant = mongoose.Schema({
         required: true,
         ref: "user",
     },
+    storeName:{
+        type:String
+    },
+    phoneNumber:{
+        type:Number
+    },
     isVerified: { type: Boolean, default: false },
     certificateLink: {
         type: String,

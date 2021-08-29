@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 const Merchant = require("../models/Merchant");
+const Item = require("../models/Item");
 const geocoder = require("../utils/geoCoder");
 
 // To view user's medical history
@@ -218,6 +219,7 @@ async function getUserProfile(req, res) {
 async function addFriend(req, res) {
     try {
         let myId = req.user.id;
+        let user = await User.findOne({ _id: myId });
         let friendId = req.body.friendId;
 
         let friend = await User.findOne({ _id: friendId });
@@ -230,7 +232,11 @@ async function addFriend(req, res) {
                 });
             }
         }
-        friend.requests.push({ userId: myId });
+        friend.requests.push({
+            userId: myId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+        });
         await friend.save();
         return res
             .status(200)
@@ -261,7 +267,12 @@ async function acceptFriendRequest(req, res) {
             }
         }
         //add object in friends if not friend already
-        user.friends.push({ userId: requestId });
+        let accepteduser = await User.findOne({ _id: requestId });
+        user.friends.push({
+            userId: requestId,
+            firstName: accepteduser.firstName,
+            lastName: accepteduser.lastName,
+        });
         await user.save();
         return res.status(200).send({ success: true, data: "Friend Added" });
     } catch (err) {
@@ -319,7 +330,20 @@ async function getFriends(req, res) {
     try {
         let userId = req.user.id;
         let user = await User.findOne({ _id: userId });
-        return res.status(200).send({ success: true, data: user.friends });
+        let friends = [];
+        for (let i = 0; i < user.friends.length; i++) {
+            let friendId = user.friends[i].userId;
+            let friend = await User.findOne({ _id: friendId });
+            let firstName = friend.firstName;
+            let lastName = friend.lastName;
+            friends.push({
+                firstName: firstName,
+                lastName: lastName,
+                friendId: friendId,
+                userId: userId, //curr user
+            });
+        }
+        return res.status(200).send({ success: true, data: friends });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
@@ -327,9 +351,8 @@ async function getFriends(req, res) {
 }
 
 async function getNearestStore(req, res) {
-    // let itemName = req.body.itemName;
-    let loc = req.body.location;
-    let currentloc = await geocoder.geocode(loc);
+    let currentloc = req.body.location;
+    // let currentloc = await geocoder.geocode(loc);
     console.log("Curr location " + currentloc);
 
     let merchants = await Merchant.find({
@@ -338,19 +361,27 @@ async function getNearestStore(req, res) {
                 $maxDistance: 15000, //Searching in a range of 15 kms
                 $geometry: {
                     type: "Point",
-                    coordinates: [
-                        currentloc[0].longitude,
-                        currentloc[0].latitude,
-                    ],
+                    coordinates: [currentloc[0], currentloc[1]],
                 },
             },
         },
-    });
-    console.log("Merchants : ");
-    console.log(merchants);
+    }).select("_id");
+    // console.log("merchant")
+    // console.log(merchants)
 
-    if (merchants) {
-        return res.status(200).send({ success: true, data: merchants });
+    let merchantWithStock = await Item.find({
+        merchantId: {
+            $in: [...merchants],
+        },
+    }).populate("merchantId");
+
+    // console.log("Merchants : ");
+    // console.log(merchants);
+    // console.log("Final")
+    // console.log(merchantWithStock)
+
+    if (merchantWithStock) {
+        return res.status(200).send({ success: true, data: merchantWithStock });
     }
     return res.status(400).send({ success: false, msg: "No Store found" });
 }

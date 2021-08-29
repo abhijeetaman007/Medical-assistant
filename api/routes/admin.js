@@ -21,6 +21,8 @@ async function verifyDoctor(req, res) {
                 },
             }
         );
+        doctor.isVerified = true;
+        await doctor.save();
         return res.status(200).send({ success: true, msg: "Doctor Verified" });
     } catch (err) {
         console.log(err);
@@ -46,6 +48,8 @@ async function verifyMerchant(req, res) {
                 },
             }
         );
+        merchant.isVerified = true;
+        await merchant.save();
         return res
             .status(200)
             .send({ success: true, msg: "Merchant Verified" });
@@ -57,10 +61,22 @@ async function verifyMerchant(req, res) {
 
 async function getAllMerchantsToBeVerified(req, res) {
     try {
-        let merchants = await Merchant.findMany({
-            isVerified: true,
+        let merchants = await Merchant.find({
+            isVerified: false,
         }).exec();
-        return res.status(200).send({ success: false, data: merchants });
+        let obj = [];
+        for (let i = 0; i < merchants.length; i++) {
+            let merchantuserId = merchants[i].userId;
+            let user = await User.findOne({ _id: merchantuserId });
+            obj.push({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userId: user._id,
+                merchantId: merchants[i]._id,
+                certificateLink: merchants[i].certificateLink,
+            });
+        }
+        return res.status(200).send({ success: true, data: obj });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
@@ -68,10 +84,22 @@ async function getAllMerchantsToBeVerified(req, res) {
 }
 async function getAllDoctorsToBeVerified(req, res) {
     try {
-        let doctors = await Doctor.findMany({
-            isVerified: true,
+        let doctors = await Doctor.find({
+            isVerified: false,
         }).exec();
-        return res.status(200).send({ success: false, data: doctors });
+        let obj = [];
+        for (let i = 0; i < doctors.length; i++) {
+            let doctoruserId = doctors[i].userId;
+            let user = await User.findOne({ _id: doctoruserId });
+            obj.push({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userId: user._id,
+                doctorId: doctors[i]._id,
+                certificateLink: doctors[i].certificateLink,
+            });
+        }
+        return res.status(200).send({ success: true, data: obj });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, msg: "Server Error" });
