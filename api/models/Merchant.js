@@ -21,7 +21,6 @@ const Merchant = mongoose.Schema({
     },
     address: {
         type: String,
-        required: true,
     },
     location: {
         type: {
@@ -53,7 +52,7 @@ Merchant.pre("save", async function (next) {
     };
 
     //Not saving user entered address rather storing formatted address
-    this.address = undefined;
+    // this.address = undefined;
     next();
 });
 

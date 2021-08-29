@@ -358,7 +358,7 @@ async function getNearestStore(req, res) {
     let merchants = await Merchant.find({
         location: {
             $near: {
-                $maxDistance: 15000, //Searching in a range of 15 kms
+                $maxDistance: 15000000000000000000000000000000000000000000, //Searching in a range of 15 kms
                 $geometry: {
                     type: "Point",
                     coordinates: [currentloc[0], currentloc[1]],

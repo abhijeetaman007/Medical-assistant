@@ -36,6 +36,8 @@ export default function Home() {
   const [adminDataLoading, setAdminDataLoading] = useState(true)
   const [adminData, setAdminData] = useState([[],[]])
 
+  const [medicine, setMedicine] = useState([])
+
   const handleSaveDocument = async (folderName, fileName, ref) => {
     if (!ref || !ref.current) return;
     const file = ref.current.files[0];
@@ -48,9 +50,10 @@ export default function Home() {
     }
   };
 
-  const handleItemDelete = (id)=>{
+  const handleItemDelete = async (id)=>{
     try{
-      deleteCall(`/user/merchant/${id}`)
+      const res = await deleteCall(`/user/merchant/deleteitem/${id}`)
+      console.log(res);
       addToast("Deleted Successfully", { appearance: "success" });
       fetchMerchantData()
     }
@@ -181,10 +184,10 @@ export default function Home() {
       tags:itemTags.value.split(" ")
     })
     if(!res.success){
-      fetchMerchantData()
       addToast("Something went wrong",{appearance:"error"})
     }
     else{
+      fetchMerchantData()
       addToast("Item Added",{appearance:"success"})
     }
   }
@@ -211,6 +214,7 @@ export default function Home() {
   const setUserLocation = ()=>{
     navigator.geolocation.getCurrentPosition((loc)=>{
       setLocation([loc.coords.longitude,loc.coords.latitude])
+      handleGetStores([loc.coords.longitude,loc.coords.latitude])
     }, ()=>{
       addToast("Something went wrong",{appearance:"error"})
     });
@@ -220,7 +224,7 @@ export default function Home() {
     try{
       await get(`/user/admin/verifydoctor/${id}`)
       fetchAdminDetails()
-      addToast("Verifeid Successfully",{appearance:"success"})
+      addToast("Verified Successfully",{appearance:"success"})
     }
     catch(err){
       addToast("Something went wrong",{appearance:"error"})
@@ -231,20 +235,33 @@ export default function Home() {
     try{
       await get(`/user/admin/verifymerchant/${id}`)
       fetchAdminDetails()
-      addToast("Verifeid Successfully",{appearance:"success"})
+      addToast("Verified Successfully",{appearance:"success"})
     }
     catch(err){
       addToast("Something went wrong",{appearance:"error"})
     }
   }
-  
+
+  const handleGetStores = async (coords)=>{
+    const res = await post(`/user/getnearestmerchant`, {
+      location: coords
+    })
+    setMedicine(res)
+  }
+
+  const getFilteredMedicine = ()=>{
+    console.log(medicine);
+    return medicine
+  }
+   
 
   useEffect(() => {
     fetchUserDetails();
     fetchHistory();
     fetchMerchantData()
     fetchAdminDetails()
-    setUserLocation()
+     setUserLocation()
+   
   }, []);
 
   return (
@@ -256,6 +273,7 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
+        <button onClick={() => setRole(5)}>Find Medicine</button>
         { auth.user.isAdmin && <button onClick={() => setRole(4)}>Admin Panel</button>}
        { auth.user.isMerchant.isVerified && <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
        { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> Become Merchant</button>}
@@ -389,9 +407,9 @@ export default function Home() {
                       merchantItems.map(item=>{
                         return <div className="merchant-item">
                           <h3>{item.itemName}</h3>
-                          <span>{item.quantity}</span>
+                          <span>Quantity: {item.quantity}</span>
                           <div className="desc">{item.description}</div>
-                          <div className="cost">{item.cost}</div>
+                          <div className="cost">Cost: {item.cost} /-</div>
                           <div onClick={()=>handleItemDelete(item._id)} className="delete">Delete Item</div>
                         </div>
                       })
@@ -452,6 +470,23 @@ export default function Home() {
             </h1> 
             </section>
             </>}
+          </div>
+        }
+
+        {
+          role ===5 && <div className="find-meds">
+            <h1>Find Medicine</h1>
+              <input type="text" placeholder="Search" />
+              
+                {
+                  !getFilteredMedicine().length &&  <h1 style={{marginTop:30}} >No Medicine found</h1>
+                }
+
+              {!!getFilteredMedicine().length && getFilteredMedicine().map(data=>{
+               return  <div className="data">
+
+                </div>
+              })}
           </div>
         }
       </main>
