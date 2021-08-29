@@ -96,8 +96,8 @@ router.post("/user/acceptfriendrequest", isLoggedIn, acceptFriendRequest);
 router.post("/user/rejectfriendrequest", isLoggedIn, rejectFriendRequest);
 router.get("/user/getfriendrequests", isLoggedIn, getFriendRequests);
 router.get("/user/getfriends", isLoggedIn, getFriends);
-router.get("/user/viewmerchants", isLoggedIn, viewDoctors);
-router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
+router.get("/user/viewmerchants", isLoggedIn, viewMerchants);
+router.get("/user/viewdoctors", isLoggedIn, viewDoctors);
 
 //Merchant Routes ->Rhea
 router.post("/user/merchant/additem", isLoggedIn, isMerchant, addItem);

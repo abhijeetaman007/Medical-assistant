@@ -5,7 +5,8 @@ import useInputState from "../hooks/useInputState";
 import { useToasts } from "react-toast-notifications";
 import useForceUpdate from "../hooks/useForceUpdate";
 import { storeFile } from "../utils/utilities";
-
+import Loading from "../components/Loading";
+import FriendsList from "./FriendsList";
 export default function Home() {
   const auth = useAuth();
   const description = useInputState();
@@ -13,12 +14,13 @@ export default function Home() {
   const { addToast } = useToasts();
 
   const [historyLoad, setistoryLoad] = useState(true);
+  const [detailsLoad, setDetailsLoad] = useState(true);
   const [myhistory, setMyHistory] = useState([]);
   const [userDetails, setUserDetails] = useState({});
   const [userFriends, setUserFriends] = useState([]);
   const [userRequests, setUserRequests] = useState([]);
   const [role, setRole] = useState(0); //1 for merchant and 2 for doctor
-  const [patients, setPatients] = useState([]);
+  const [friends, setFriends] = useState([]);
   const merchantFileRef = React.useRef(null);
   const docFileRef = React.useRef(null);
   const historyFileRef = React.useRef(null);
@@ -56,7 +58,10 @@ export default function Home() {
         setUserDetails(data.data);
         setUserFriends(data.data.friends);
         setUserRequests(data.data.requests);
-        if (data.data.isDoctor.isVerified) fetchPatients();
+        fetchFriends();
+        setDetailsLoad(false);
+        console.log(data.data.isDoctor.isVerified);
+
         // if(data.data.isMerchant.isVerified)fetchMerchants();
       });
     } catch (err) {
@@ -107,9 +112,9 @@ export default function Home() {
     }
   };
 
-  const fetchPatients = async () => {
+  const fetchFriends = async () => {
     try {
-      await get(`/user/doctor/viewpatients`).then((data) => {
+      await get(`/user/getfriends`).then((data) => {
         console.log(data.data);
         // setPatients(data.data);
       });
@@ -149,6 +154,8 @@ export default function Home() {
     fetchHistory();
   }, []);
 
+  if (detailsLoad === true) return <Loading />;
+
   return (
     <div className="home">
       <aside>
@@ -158,9 +165,20 @@ export default function Home() {
           </h2>
         </div>
         <div className="bottom">
-          <button onClick={() => setRole(1)}><i class="fas fa-store"></i> I am a Merchant</button>
-          <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> I am a Doctor</button>
-          <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
+          <button onClick={() => setRole(1)}>
+            <i class="fas fa-store"></i> I am a Merchant
+          </button>
+          <button onClick={() => setRole(2)}>
+            <i class="fas fa-user-md"></i>{" "}
+            {userDetails.isDoctor.isVerified === false ? (
+              <>I am a Doctor </>
+            ) : (
+              <>Doctor's Portal</>
+            )}
+          </button>
+          <button onClick={() => setRole(0)}>
+            <i class="far fa-user-circle"></i> Profile
+          </button>
           <button className="logout" onClick={auth.logout}>
             <i class="fas fa-sign-out-alt"></i> Logout
           </button>
@@ -178,10 +196,16 @@ export default function Home() {
                 />
               </div>
               <div>
-                <p>{userDetails.firstName + " " + userDetails.lastName}</p>
-                <p class="title">{userDetails.email}</p>
-                <p>Followers : {userFriends.length}</p>
-                <p>Pending Requests : {userRequests.length}</p>
+                {detailsLoad === false ? (
+                  <>
+                    <p>{userDetails.firstName + " " + userDetails.lastName}</p>
+                    <p class="title">{userDetails.email}</p>
+                    <p>Followers : {userFriends.length}</p>
+                    <p>Pending Requests : {userRequests.length}</p>
+                  </>
+                ) : (
+                  <Loading />
+                )}
               </div>
             </div>
             <form onSubmit={postHistory}>
@@ -216,49 +240,58 @@ export default function Home() {
         )}
         {role === 1 && (
           <>
-            <form onSubmit={applyForMerchant}>
-              <h3>Verify Merhcant Details</h3>
-              <input
-                ref={merchantFileRef}
-                onChange={update}
-                type="file"
-                name="file"
-                accept="file/*"
-              />
-              <input
-                value={address.value}
-                onChange={address.handleChange}
-                type="text"
-                placeholder="Location"
-              />
-              <button className="btn">Submit</button>
-            </form>
             {userDetails.isMerchant.isVerified === false ? (
-              <h1>Application Status: Not Verified </h1>
+              <>
+                <form onSubmit={applyForMerchant}>
+                  <h3>Verify Merhcant Details</h3>
+                  <input
+                    ref={merchantFileRef}
+                    onChange={update}
+                    type="file"
+                    name="file"
+                    accept="file/*"
+                  />
+                  <input
+                    value={address.value}
+                    onChange={address.handleChange}
+                    type="text"
+                    placeholder="Location"
+                  />
+                  <button className="btn">Submit</button>
+                </form>
+                <h1>Application Status: Not Verified </h1>
+              </>
             ) : (
-              <p>Verified</p>
+              <h1>Verified Merchant</h1>
             )}
-           
           </>
         )}
         {role === 2 && (
           <>
-            <form onSubmit={applyforDoc}>
-              <h3>Verify Doc Details</h3>
-              <input
-                ref={docFileRef}
-                onChange={update}
-                type="file"
-                name="file"
-                accept="file/*"
-              />
-
-              <button className="btn">Submit</button>
-            </form>
             {userDetails.isDoctor.isVerified === false ? (
-              <h1>Application Status: Not Verified </h1>
+              <>
+                <form onSubmit={applyforDoc}>
+                  <h3>Verify Doc Details</h3>
+                  <input
+                    ref={docFileRef}
+                    onChange={update}
+                    type="file"
+                    name="file"
+                    accept="file/*"
+                  />
+
+                  <button className="btn">Submit</button>
+                </form>
+                <h1>Application Status: Not Verified </h1>
+              </>
             ) : (
-              <p>Verified</p>
+              <>
+                
+                <h1>Verified Doctor</h1>
+                <div className="freindsHistory">
+                <FriendsList />
+                </div>
+              </>
             )}
           </>
         )}
