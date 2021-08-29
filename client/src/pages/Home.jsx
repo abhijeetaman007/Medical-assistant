@@ -18,7 +18,11 @@ export default function Home() {
   const itemCost = useInputState();
   const itemDescription = useInputState();
   const itemTags = useInputState();
-  const merchantNewAddress = useInputState();
+  const search = useInputState();
+  const storeName = useInputState();
+  const phoneNo = useInputState();
+
+
   const [merchantItems, setMerchantItems] = useState([])
 
   const [historyLoad, setistoryLoad] = useState(true);
@@ -53,7 +57,6 @@ export default function Home() {
   const handleItemDelete = async (id)=>{
     try{
       const res = await deleteCall(`/user/merchant/deleteitem/${id}`)
-      console.log(res);
       addToast("Deleted Successfully", { appearance: "success" });
       fetchMerchantData()
     }
@@ -67,7 +70,6 @@ export default function Home() {
   const fetchHistory = async () => {
     try {
       await get(`/user/viewhistory`).then((data) => {
-        console.log(data.data);
         setMyHistory(data.data);
         setistoryLoad(false);
       });
@@ -79,7 +81,6 @@ export default function Home() {
   const fetchUserDetails = async () => {
     try {
       await get(`/user/viewprofile`).then((data) => {
-        console.log(data.data);
         setUserDetails(data.data);
         setUserFriends(data.data.friends);
         setUserRequests(data.data.requests);
@@ -124,6 +125,8 @@ export default function Home() {
       await post(`/user/applymerchant`, {
         certificateLink,
         address: address.value,
+        storeName:storeName.value,
+        phoneNumber:phoneNo.value
       }).then((data) => {
         console.log(data);
         if (data.success) addToast(data.msg, { appearance: "success" });
@@ -246,12 +249,15 @@ export default function Home() {
     const res = await post(`/user/getnearestmerchant`, {
       location: coords
     })
-    setMedicine(res)
+    setMedicine(res.data)
   }
 
   const getFilteredMedicine = ()=>{
     console.log(medicine);
-    return medicine
+    return medicine.filter(data=>{
+      const searchTerm = data.itemName + " " + data.tags.join(" ")
+      return searchTerm.toLowerCase().includes(search.value.toLowerCase())
+    })
   }
    
 
@@ -260,7 +266,7 @@ export default function Home() {
     fetchHistory();
     fetchMerchantData()
     fetchAdminDetails()
-     setUserLocation()
+    setUserLocation()
    
   }, []);
 
@@ -349,9 +355,21 @@ export default function Home() {
                 type="text"
                 placeholder="Location"
               />
+               <input
+                value={storeName.value}
+                onChange={storeName.handleChange}
+                type="text"
+                placeholder="Store Name"
+              />
+                <input
+                value={phoneNo.value}
+                onChange={phoneNo.handleChange}
+                type="text"
+                placeholder="Phone Number"
+              />
               <button className="btn">Submit</button>
             </form>
-            {userDetails.isMerchant.isVerified === false ? (
+            {userDetails.isMerchant && userDetails.isMerchant.isVerified === false ? (
               <h1>Application Status: Not Verified </h1>
             ) : (
               <p>Verified</p>
@@ -385,14 +403,6 @@ export default function Home() {
               <div className="merchant-dashboard">
                 <div className="top">
                 <h1>Merchant Dashboard</h1>
-                      <section>
-                  <form>
-                  <h3>Edit Address</h3>
-                                      <input className="input" type="text" value={merchantNewAddress.value} onChange={merchantNewAddress.handleChange} />
-                  <button className="btn">Submit</button>
-                  </form>
-
-                </section>
                 <main>
                 { merchantItems.length && <> <h1>Items</h1>
                    <div className="items">
@@ -476,7 +486,7 @@ export default function Home() {
         {
           role ===5 && <div className="find-meds">
             <h1>Find Medicine</h1>
-              <input type="text" placeholder="Search" />
+              <input type="text" value={search.value} onChange={search.handleChange} placeholder="Search" />
               
                 {
                   !getFilteredMedicine().length &&  <h1 style={{marginTop:30}} >No Medicine found</h1>
@@ -484,8 +494,14 @@ export default function Home() {
 
               {!!getFilteredMedicine().length && getFilteredMedicine().map(data=>{
                return  <div className="data">
-
+                  <h3>{data.itemName}</h3>
+                  <p>{data.description}</p>
+                  <div className="quantity">
+                    Quantity available: {data.quantity}
+                  </div>
+                  {data.merchantId.location.city} - <a href={`tel:${data.merchantId.phoneNumber}`} >{data.merchantId.phoneNumber}</a>
                 </div>
+
               })}
           </div>
         }

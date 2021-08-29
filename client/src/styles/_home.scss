@@ -225,3 +225,23 @@ align-items: center;
     }
   }
 }
+
+.find-meds{
+  background-color: #fff;
+
+  input{
+    font-size: 1.5rem;
+    border-bottom: 1px solid #0003;
+    margin: 1rem;
+  }
+
+  .data{
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid #0003;
+
+    *{
+      margin: .25rem 0;
+    }
+  }
+}
