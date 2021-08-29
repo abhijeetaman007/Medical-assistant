@@ -12,6 +12,7 @@
 -   Doctors have ease to view full medical history whenever needed by just a single click.
 -   Tired of searching medicines in your locality? Now no need, searching is just one click away.Get to know about nearest medical stores,medicines available,etc.
 -   Specially during the pandemic this application will be of great importance providing ease of searching doctors,sharing medical records,getting in touch with medical stores.
+<hr/>
 
 ## 👨‍👩‍👦‍👦 Users (Either patient or doctor or merchant or both)
 
@@ -21,13 +22,11 @@
 -   Users can search doctors from wide range of available doctors as per their need and request doctor for accepting their request to become their doctor.
 -   Users can search for medicines and other medical resources and get to know the nearest medical stores/merchant who has that in stock.
 -   Users can apply to become doctor or merchants by uploading required certificates and can help other patients using the application.After applying admin verifies the required condition then user becomes merchant or doctor.
-<hr/>
 
 ## 💉 Doctors
 
 -   Doctors have ease to directly update medical history using the application in a paperless and efficient manner along with an option to upload test reports and supporting documents for future refernce
 -   Doctors can view history of their any patients when ever and where ever they want.
-<hr/>
 
 ## 🏥 Merchants
 
