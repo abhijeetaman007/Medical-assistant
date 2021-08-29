@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 
 const Item = mongoose.Schema({
-    userId: {
+    merchantId: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "user",
+        ref: "merchant",
     },
     itemName: {
         type: String,

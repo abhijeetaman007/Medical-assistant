@@ -12,6 +12,10 @@ const Merchant = mongoose.Schema({
         type: String,
         required: true,
     },
+    address: {
+        type: String,
+        required: true,
+    },
     location: {
         type: {
             type: String,
@@ -25,7 +29,7 @@ const Merchant = mongoose.Schema({
         city: {
             type: String,
         },
-    }
+    },
 });
 
 Merchant.index({ location: "2dsphere" });

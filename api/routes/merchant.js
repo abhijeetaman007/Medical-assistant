@@ -7,7 +7,12 @@ const Item = require("../models/Item");
 async function addItem(req, res) {
     try {
         let { itemName, quantity, cost, description, tags } = req.body;
+        let merchant = await Merchant.findOne({ userId: req.user.id });
+        if (!merchant) {
+            return res.send({ success: false, msg: "Merchant doesnt exist" });
+        }
         let item = new Item({
+            merchantId: merchant._id,
             itemName: itemName,
             quantity: quantity,
             cost: cost,
@@ -16,7 +21,7 @@ async function addItem(req, res) {
         });
         item.save();
         return res.send({
-            success: false,
+            success: true,
             msg: "Added item",
         });
     } catch (err) {
@@ -24,12 +29,24 @@ async function addItem(req, res) {
         return res.status(500).send({ success: false, msg: "Server Error" });
     }
 }
-async function removeItem(req, res) {
+async function deleteItem(req, res) {
     try {
         let { itemId } = req.body;
+        let item = await Item.findOne({ _id: itemId });
+        if (!item) {
+            return res.send({ success: false, msg: "Item doesnt exist" });
+        }
+        let merchant = await Merchant.findOne({ userId: req.user.id });
+
+        if (!merchant) {
+            return res.send({ success: false, msg: "Merchant doesnt exist" });
+        }
+        console.log(item.merchantId);
+        console.log(merchant._id);
+
         await Item.deleteOne({ _id: itemId });
         return res.send({
-            success: false,
+            success: true,
             msg: "Deleted item",
         });
     } catch (err) {
@@ -41,7 +58,10 @@ async function removeItem(req, res) {
 async function editAddress(req, res) {
     try {
         let { address } = req.body;
-        let merchant = User.findOne({ userId: req.user.id });
+        let merchant = Merchant.findOne({ userId: req.user.id });
+        if (!merchant) {
+            return res.send({ success: false, msg: "Merchant doesnt exist" });
+        }
         merchant.address = address;
         merchant.save();
         return res.send({
@@ -56,6 +76,6 @@ async function editAddress(req, res) {
 
 module.exports = {
     addItem,
-    removeItem,
+    deleteItem,
     editAddress,
 };
