@@ -37,11 +37,11 @@ const {
     getNearestStore,
 } = require("./user");
 
-const { viewPatientHistory} = require("./doctor");
+const { viewPatientHistory } = require("./doctor");
 
 const { verifyDoctor, verifyMerchant } = require("./admin");
 
-const { editItem, addItem, removeItem } = require("./merchant");
+const {  addItem, removeItem, editAddress } = require("./merchant");
 
 //Auth Routes ->Rhea
 router.post("/auth/register", Register);
@@ -102,6 +102,6 @@ router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
 //Merchant Routes ->Rhea
 router.post("/user/merchant/additem", isLoggedIn, isMerchant, addItem);
 router.delete("/user/merchant/removeitem", isLoggedIn, isMerchant, removeItem);
-router.post("/user/merchant/editItem", isLoggedIn, isMerchant, editItem);
+router.post("/user/merchant/editaddress", isLoggedIn, isMerchant, editAddress);
 
 module.exports = router;
