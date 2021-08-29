@@ -96,6 +96,7 @@ async function getAllDoctorsToBeVerified(req, res) {
                 lastName: user.lastName,
                 userId: user._id,
                 doctorId: doctors[i]._id,
+                certificateLink: doctors[i].certificateLink,
             });
         }
         return res.status(200).send({ success: true, data: obj });
