@@ -6,12 +6,14 @@ import { useToasts } from "react-toast-notifications";
 import useForceUpdate from "../hooks/useForceUpdate";
 import { storeFile } from "../utils/utilities";
 import Loading from "../components/Loading";
-
+import FriendsList from "./FriendsList";
 export default function Home() {
   const auth = useAuth();
   const description = useInputState();
   const address = useInputState();
   const { addToast } = useToasts();
+  const addFriendEmail = useInputState();
+  const removeFriendEmail = useInputState();
 
   const itemName = useInputState();
   const itemQuantity = useInputState();
@@ -26,12 +28,13 @@ export default function Home() {
   const [merchantItems, setMerchantItems] = useState([])
 
   const [historyLoad, setistoryLoad] = useState(true);
+  const [detailsLoad, setDetailsLoad] = useState(true);
   const [myhistory, setMyHistory] = useState([]);
   const [userDetails, setUserDetails] = useState({});
   const [userFriends, setUserFriends] = useState([]);
   const [userRequests, setUserRequests] = useState([]);
   const [role, setRole] = useState(0); //1 for merchant and 2 for doctor
-  const [patients, setPatients] = useState([]);
+  const [friends, setFriends] = useState([]);
   const merchantFileRef = React.useRef(null);
   const docFileRef = React.useRef(null);
   const historyFileRef = React.useRef(null);
@@ -58,12 +61,11 @@ export default function Home() {
     try{
       const res = await deleteCall(`/user/merchant/deleteitem/${id}`)
       addToast("Deleted Successfully", { appearance: "success" });
-      fetchMerchantData()
-    }
-    catch (err) {
+      fetchMerchantData();
+    } catch (err) {
       addToast("Something Went Wrong", { appearance: "error" });
     }
-}
+  };
 
   const update = useForceUpdate();
 
@@ -80,11 +82,15 @@ export default function Home() {
 
   const fetchUserDetails = async () => {
     try {
-      await get(`/user/viewprofile`).then((data) => {
+      await get(`/user/viewprofile/${auth.user._id}`).then((data) => {
+        console.log(data.data);
         setUserDetails(data.data);
         setUserFriends(data.data.friends);
         setUserRequests(data.data.requests);
-        if (data.data.isDoctor.isVerified) fetchPatients();
+        //fetchFriends();
+        setDetailsLoad(false);
+        console.log(data.data.isDoctor.isVerified);
+
         // if(data.data.isMerchant.isVerified)fetchMerchants();
       });
     } catch (err) {
@@ -137,17 +143,6 @@ export default function Home() {
     }
   };
 
-  const fetchPatients = async () => {
-    try {
-      await get(`/user/doctor/viewpatients`).then((data) => {
-        console.log(data.data);
-        // setPatients(data.data);
-      });
-    } catch (err) {
-      console.log(err.response);
-    }
-  };
-
   const postHistory = async (e) => {
     e.preventDefault();
     description.handleReset();
@@ -160,7 +155,7 @@ export default function Home() {
     console.log(imageLink);
 
     try {
-      await post(`/user/updatehistory`, {
+      await post(`/user/updatehistory/${auth.user._id}`, {
         imageLink: imageLink,
         description: description.value,
       }).then((data) => {
@@ -174,26 +169,34 @@ export default function Home() {
     fetchHistory();
   };
 
-  const handleMerchantSubmit = async (e)=>{
-    e.preventDefault()
-    if(!itemName.value || !itemQuantity.value || !itemCost.value || !itemDescription.value || !itemTags.value){
-      return addToast("All fields are required",{appearance:"error"})
+  const acceptRequest = async ({ requestId }) => {
+    try {
+      await post(`/user/acceptfriendrequest`, {
+        requestId,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
     }
-    const res = await post('/user/merchant/additem',{
-      itemName:itemName.value,
-      quantity: parseInt(itemQuantity.value),
-      cost:parseInt(itemCost.value),
-      description:itemDescription.value,
-      tags:itemTags.value.split(" ")
-    })
-    if(!res.success){
-      addToast("Something went wrong",{appearance:"error"})
+    fetchUserDetails();
+  };
+  const rejectRequest = async ({ requestId }) => {
+    try {
+      await post(`/user/rejectfriendrequest`, {
+        requestId,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
     }
-    else{
-      fetchMerchantData()
-      addToast("Item Added",{appearance:"success"})
-    }
-  }
+    fetchUserDetails();
+  };
 
   const fetchMerchantData = ()=> get('/user/merchant/items').then((data)=>{
     setMerchantItems(data.data)
@@ -260,6 +263,66 @@ export default function Home() {
     })
   }
    
+  
+  
+  const addFriend = async ( e) => {
+    e.preventDefault();
+    addFriendEmail.handleReset();
+    try {
+      await post(`/user/addfriend`, {
+        friendEmail : addFriendEmail.value,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+
+  const removeFriend = async (e) => {
+    e.preventDefault();
+    removeFriendEmail.handleReset();
+    try {
+      await post(`/user/removefriend`, {
+        rfriendEmail : removeFriendEmail.value,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+
+  const handleMerchantSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !itemName.value ||
+      !itemQuantity.value ||
+      !itemCost.value ||
+      !itemDescription.value ||
+      !itemTags.value
+    ) {
+      return addToast("All fields are required", { appearance: "error" });
+    }
+    const res = await post("/user/merchant/additem", {
+      itemName: itemName.value,
+      quantity: parseInt(itemQuantity.value),
+      cost: parseInt(itemCost.value),
+      description: itemDescription.value,
+      tags: itemTags.value.split(" "),
+    });
+    if (!res.success) {
+      addToast("Something went wrong", { appearance: "error" });
+    } else {
+      addToast("Item Added", { appearance: "success" });
+    }
+  };
 
   useEffect(() => {
     fetchUserDetails();
@@ -269,6 +332,8 @@ export default function Home() {
     setUserLocation()
    
   }, []);
+
+  if (detailsLoad === true) return <Loading />;
 
   return (
     <div className="home">
@@ -283,8 +348,15 @@ export default function Home() {
         { auth.user.isAdmin && <button onClick={() => setRole(4)}>Admin Panel</button>}
        { auth.user.isMerchant.isVerified && <button onClick={() => setRole(3)}><i style={{marginRight:6}} class="fas fa-store"></i>Dashboard</button>}
        { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> Become Merchant</button>}
-        { !auth.user.isDoctor.isVerified && <button onClick={() => setRole(2)}><i class="fas fa-user-md"></i> Become Doctor</button>}
           <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
+          <button onClick={() => setRole(2)}>
+            <i class="fas fa-user-md"></i>{" "}
+            {userDetails.isDoctor.isVerified === false ? (
+              <>I am a Doctor </>
+            ) : (
+              <>Doctor's Portal</>
+            )}
+          </button>
           <button className="logout" onClick={auth.logout}>
             <i class="fas fa-sign-out-alt"></i> Logout
           </button>
@@ -304,9 +376,55 @@ export default function Home() {
               <div>
                 <p>{userDetails.firstName + " " + userDetails.lastName}</p>
                 <p class="title">{userDetails.email}</p>
-                <p>Followers : {userFriends.length}</p>
+                <p>Connected To : {userFriends.length}</p>
                 <p>Pending Requests : {userRequests.length}</p>
               </div>
+              <div>
+                <h3>Pending Requests :</h3>
+                {userDetails.requests.map((req, ind) => {
+                  return (
+                    <p key={ind}>
+                      {req.email}
+                      <i
+                        class="far fa-check-circle"
+                        onClick={() => acceptRequest(req.userId)}
+                        style={{ color: "green" }}
+                      ></i>{" "}
+                      <i
+                        class="far fa-times-circle"
+                        style={{ color: "red" }}
+                        onClick={() => rejectRequest(req.userId)}
+                      ></i>{" "}
+                    </p>
+                  );
+                })}
+              </div>
+              <div>
+                <h3>Friends : </h3>
+                {userDetails.friends.map((req, ind) => {
+                  return <p key={ind}>{req.email}</p>;
+                })}
+              </div>
+            </div>
+            <div className="textfields">
+            <form onSubmit={addFriend}>
+              <input
+                value={addFriendEmail.value}
+                onChange={addFriendEmail.handleChange}
+                type="text"
+                placeholder="Add Friend"
+              />
+              <button className="btn">Send</button>
+            </form>
+            <form onSubmit={removeFriend}>
+              <input
+                value={removeFriendEmail.value}
+                onChange={removeFriendEmail.handleChange}
+                type="text"
+                placeholder="Remove Friend"
+              />
+              <button className="btn">Send</button>
+            </form>
             </div>
             <form onSubmit={postHistory}>
               <h3>Upload History</h3>
@@ -372,29 +490,39 @@ export default function Home() {
             {userDetails.isMerchant && userDetails.isMerchant.isVerified === false ? (
               <h1>Application Status: Not Verified </h1>
             ) : (
-              <p>Verified</p>
+              <h1>Verified Merchant</h1>
             )}
-           
           </>
         )}
         {role === 2 && (
           <>
-            <form onSubmit={applyforDoc}>
-              <h3>Verify Doc Details</h3>
-              <input
-                ref={docFileRef}
-                onChange={update}
-                type="file"
-                name="file"
-                accept="file/*"
-              />
-
-              <button className="btn">Submit</button>
-            </form>
             {userDetails.isDoctor.isVerified === false ? (
-              <h1>Application Status: Not Verified </h1>
+              <>
+                <form onSubmit={applyforDoc}>
+                  <h3>Verify Doc Details</h3>
+                  <input
+                    ref={docFileRef}
+                    onChange={update}
+                    type="file"
+                    name="file"
+                    accept="file/*"
+                  />
+
+                  <button className="btn">Submit</button>
+                </form>
+                <h1>Application Status: Not Verified </h1>
+              </>
             ) : (
-              <p>Verified</p>
+              <>
+                <h1>Patients Details</h1>
+                {userFriends.map((friend, ind) => {
+                  return (
+                    <div className="freindsHistory">
+                      <FriendsList user={friend} key={ind} />
+                    </div>
+                  );
+                })}
+              </>
             )}
           </>
         )}

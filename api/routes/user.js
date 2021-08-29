@@ -26,8 +26,8 @@ async function viewHistory(req, res) {
 //User adding his own medical record --- unverified documents
 async function addToHistory(req, res) {
     try {
-        console.log("History : " + req.user);
-        let userId = req.user.id;
+        //console.log("History : " + req.user);
+        let userId = req.params.userid;
         console.log(req.user);
         let user = await User.findById({ _id: userId });
 
@@ -199,7 +199,7 @@ async function updateProfile(req, res) {
 // get user profile
 async function getUserProfile(req, res) {
     try {
-        let userId = req.user.id;
+        let userId = req.params.userid;
         let user = await User.findById({ _id: userId }).populate(
             "isDoctor isMerchant"
         );
@@ -218,14 +218,21 @@ async function getUserProfile(req, res) {
 
 async function addFriend(req, res) {
     try {
-        let myId = req.user.id;
-        let user = await User.findOne({ _id: myId });
-        let friendId = req.body.friendId;
+        let friendEmail = req.body.friendEmail;
 
-        let friend = await User.findOne({ _id: friendId });
+        let myEmail = req.user.email;
+        let user = await User.findOne({ email: myEmail });
+
+        let friend = await User.findOne({ email: friendEmail });
+        if (!friend) {
+            return res.status(200).send({
+                success: false,
+                data: "Friend not registered",
+            });
+        }
         //if friends request already sent by me, send msg already sent request
         for (let i = 0; i < friend.requests.length; i++) {
-            if (friend.requests[i].userId == myId) {
+            if (friend.requests[i].email == myEmail) {
                 return res.status(200).send({
                     success: false,
                     data: "Friend Request Already sent",
@@ -233,7 +240,7 @@ async function addFriend(req, res) {
             }
         }
         friend.requests.push({
-            userId: myId,
+            email: myEmail,
             firstName: user.firstName,
             lastName: user.lastName,
         });
@@ -249,27 +256,27 @@ async function addFriend(req, res) {
 
 async function acceptFriendRequest(req, res) {
     try {
-        let userId = req.user.id;
-        let requestId = req.body.requestId;
-        //inside the requests array remove the requestId and put in friends array
-        const user = await User.findOne({ _id: userId });
+        let userEmail = req.user.email;
+        let requestEmail = req.body.requestEmail;
+        //inside the requests array remove the requestEmail and put in friends array
+        const user = await User.findOne({ email: userEmail });
         //remove the object from requests
         await User.update(
             { _id: userId },
-            { $pull: { requests: { userId: requestId } } }
+            { $pull: { requests: { email: requestEmail } } }
         );
 
         for (let i = 0; i < user.friends.length; i++) {
-            if (user.friends[i].userId == requestId) {
+            if (user.friends[i].email == requestEmail) {
                 return res
                     .status(200)
                     .send({ success: true, data: "Already a friend" });
             }
         }
         //add object in friends if not friend already
-        let accepteduser = await User.findOne({ _id: requestId });
+        let accepteduser = await User.findOne({ email: requestEmail });
         user.friends.push({
-            userId: requestId,
+            email: requestEmail,
             firstName: accepteduser.firstName,
             lastName: accepteduser.lastName,
         });
@@ -283,12 +290,12 @@ async function acceptFriendRequest(req, res) {
 
 async function removeFriend(req, res) {
     try {
-        let userId = req.user.id;
-        let friendId = req.body.friendId;
-        let user = await User.findOne({ _id: userId });
+        let userEmail = req.user.email;
+        let friendEmail = req.body.friendEmail;
+        let user = await User.findOne({ email: userEmail });
         await User.update(
             { _id: userId },
-            { $pull: { friends: { userId: friendId } } }
+            { $pull: { friends: { email: friendEmail } } }
         );
         return res.status(200).send({ success: true, data: "Friend Removed" });
     } catch (err) {
@@ -299,12 +306,12 @@ async function removeFriend(req, res) {
 
 async function rejectFriendRequest(req, res) {
     try {
-        let userId = req.user.id;
-        let requestId = req.body.requestId;
+        let userEmail = req.user.email;
+        let requestEmail = req.body.requestEmail;
         //inside the requests array remove the requestId and put in friends array
         await User.update(
             { _id: userId },
-            { $pull: { requests: { userId: requestId } } }
+            { $pull: { requests: { email: requestEmail } } }
         );
         return res
             .status(200)

@@ -39,7 +39,12 @@ const {
 
 const { viewPatientHistory } = require("./doctor");
 
-const { verifyDoctor, verifyMerchant ,getAllMerchantsToBeVerified,getAllDoctorsToBeVerified } = require("./admin");
+const {
+    verifyDoctor,
+    verifyMerchant,
+    getAllMerchantsToBeVerified,
+    getAllDoctorsToBeVerified,
+} = require("./admin");
 
 const { getAllItems, addItem, deleteItem, editAddress } = require("./merchant");
 
@@ -54,11 +59,11 @@ router.post("/auth/reverify", ReVerify);
 
 //User Routes ->Abhijeet
 router.get("/user/viewhistory", isLoggedIn, viewHistory);
-router.post("/user/updatehistory", isLoggedIn, addToHistory);
+router.post("/user/updatehistory/:userid", isLoggedIn, addToHistory);
 router.post("/user/applydoctor", isLoggedIn, becomeDoctor);
 router.post("/user/applymerchant", isLoggedIn, becomeMerchant);
 router.post("/user/updateprofile", isLoggedIn, updateProfile);
-router.get("/user/viewprofile", isLoggedIn, getUserProfile);
+router.get("/user/viewprofile/:userid", isLoggedIn, getUserProfile);
 router.post("/user/getnearestmerchant", getNearestStore);
 
 //Doctor Routes ->Abhijeet
@@ -107,8 +112,8 @@ router.post("/user/acceptfriendrequest", isLoggedIn, acceptFriendRequest);
 router.post("/user/rejectfriendrequest", isLoggedIn, rejectFriendRequest);
 router.get("/user/getfriendrequests", isLoggedIn, getFriendRequests);
 router.get("/user/getfriends", isLoggedIn, getFriends);
-router.get("/user/viewmerchants", isLoggedIn, viewDoctors);
-router.get("/user/viewdoctors", isLoggedIn, viewMerchants);
+router.get("/user/viewmerchants", isLoggedIn, viewMerchants);
+router.get("/user/viewdoctors", isLoggedIn, viewDoctors);
 
 //Merchant Routes ->Rhea
 router.get("/user/merchant/items", isLoggedIn, isMerchant, getAllItems);
