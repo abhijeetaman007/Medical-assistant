@@ -64,7 +64,7 @@ router.post("/user/applydoctor", isLoggedIn, becomeDoctor);
 router.post("/user/applymerchant", isLoggedIn, becomeMerchant);
 router.post("/user/updateprofile", isLoggedIn, updateProfile);
 router.get("/user/viewprofile/:userid", isLoggedIn, getUserProfile);
-router.post("/user/getnearestmerchant", getNearestStore);
+router.post("/user/getnearestmerchant",isLoggedIn, getNearestStore);
 
 //Doctor Routes ->Abhijeet
 // (:req.user.id is userID of Doctor, pass patient userId in body)

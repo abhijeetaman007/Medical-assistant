@@ -190,14 +190,6 @@ export default function Home() {
     }
   }
 
-  const setUserLocation = ()=>{
-    navigator.geolocation.getCurrentPosition((loc)=>{
-      setLocation([loc.coords.longitude,loc.coords.latitude])
-      handleGetStores([loc.coords.longitude,loc.coords.latitude])
-    }, ()=>{
-      addToast("Something went wrong",{appearance:"error"})
-    });
-  }
 
   const handleVerifyDoc = async (id)=>{
     try{
@@ -221,10 +213,20 @@ export default function Home() {
     }
   }
 
+  const setUserLocation = ()=>{
+    navigator.geolocation.getCurrentPosition((loc)=>{
+      setLocation([loc.coords.longitude,loc.coords.latitude])
+      handleGetStores([loc.coords.longitude,loc.coords.latitude])
+    }, ()=>{
+      addToast("Something went wrong",{appearance:"error"})
+    });
+  }
+
   const handleGetStores = async (coords)=>{
     const res = await post(`/user/getnearestmerchant`, {
       location: coords
     })
+    console.log(res.data);
     setMedicine(res.data)
   }
 

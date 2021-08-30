@@ -361,6 +361,7 @@ async function getFriends(req, res) {
 }
 
 async function getNearestStore(req, res) {
+    console.log("in nearrrrrrs");
     let currentloc = req.body.location;
     // let currentloc = await geocoder.geocode(loc);
     console.log("Curr location " + currentloc);
@@ -376,8 +377,8 @@ async function getNearestStore(req, res) {
             },
         },
     }).select("_id");
-    // console.log("merchant")
-    // console.log(merchants)
+    console.log("merchant");
+    console.log(merchants);
 
     let merchantWithStock = await Item.find({
         merchantId: {
