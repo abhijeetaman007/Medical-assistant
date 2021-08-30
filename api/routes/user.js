@@ -283,7 +283,15 @@ async function acceptFriendRequest(req, res) {
             email: requestEmail,
             userId: accepteduser._id,
         });
+
+        accepteduser.friends.push({
+            email: userEmail,
+            userId: user._id,
+        });
+
+
         await user.save();
+        await accepteduser.save();
         return res.status(200).send({ success: true, data: "Friend Added" });
     } catch (err) {
         console.log(err);
@@ -299,6 +307,10 @@ async function removeFriend(req, res) {
         await User.update(
             { email: userEmail },
             { $pull: { friends: { email: friendEmail } } }
+        );
+        await User.update(
+            { email: friendEmail },
+            { $pull: { friends: { email: userEmail } } }
         );
         return res.status(200).send({ success: true, data: "Friend Removed" });
     } catch (err) {
