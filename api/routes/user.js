@@ -239,10 +239,11 @@ async function addFriend(req, res) {
                 });
             }
         }
+        console.log("rrrrrrrrrr");
+        console.log(req.user.id);
         friend.requests.push({
             email: myEmail,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            userId: req.user.id,
         });
         await friend.save();
         return res
@@ -256,13 +257,16 @@ async function addFriend(req, res) {
 
 async function acceptFriendRequest(req, res) {
     try {
+        console.log("acccccccccccccc");
         let userEmail = req.user.email;
+        console.log(userEmail);
         let requestEmail = req.body.requestEmail;
+        console.log(requestEmail);
         //inside the requests array remove the requestEmail and put in friends array
         const user = await User.findOne({ email: userEmail });
         //remove the object from requests
         await User.update(
-            { _id: userId },
+            { email: userEmail },
             { $pull: { requests: { email: requestEmail } } }
         );
 
@@ -277,8 +281,7 @@ async function acceptFriendRequest(req, res) {
         let accepteduser = await User.findOne({ email: requestEmail });
         user.friends.push({
             email: requestEmail,
-            firstName: accepteduser.firstName,
-            lastName: accepteduser.lastName,
+            userId: accepteduser._id,
         });
         await user.save();
         return res.status(200).send({ success: true, data: "Friend Added" });
@@ -294,7 +297,7 @@ async function removeFriend(req, res) {
         let friendEmail = req.body.friendEmail;
         let user = await User.findOne({ email: userEmail });
         await User.update(
-            { _id: userId },
+            { email: userEmail },
             { $pull: { friends: { email: friendEmail } } }
         );
         return res.status(200).send({ success: true, data: "Friend Removed" });
@@ -310,7 +313,7 @@ async function rejectFriendRequest(req, res) {
         let requestEmail = req.body.requestEmail;
         //inside the requests array remove the requestId and put in friends array
         await User.update(
-            { _id: userId },
+            { email: userEmail },
             { $pull: { requests: { email: requestEmail } } }
         );
         return res

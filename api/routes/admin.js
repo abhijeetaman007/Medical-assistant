@@ -69,8 +69,8 @@ async function getAllMerchantsToBeVerified(req, res) {
             let merchantuserId = merchants[i].userId;
             let user = await User.findOne({ _id: merchantuserId });
             obj.push({
-                firstName: user.firstName,
-                lastName: user.lastName,
+                firstName: user.firstName ? user.firstName : "",
+                lastName: user.lastName ? user.lastName : "",
                 userId: user._id,
                 merchantId: merchants[i]._id,
                 certificateLink: merchants[i].certificateLink,
@@ -87,10 +87,20 @@ async function getAllDoctorsToBeVerified(req, res) {
         let doctors = await Doctor.find({
             isVerified: false,
         }).exec();
+        console.log("docsss:");
+        console.log(doctors);
         let obj = [];
         for (let i = 0; i < doctors.length; i++) {
-            let doctoruserId = doctors[i].userId;
+            let doctoruserId = doctors[i].userId.toString();
+            console.log(doctoruserId);
             let user = await User.findOne({ _id: doctoruserId });
+            console.log("user::");
+            console.log(user);
+            if (!user) {
+                return res
+                    .status(200)
+                    .send({ success: true, data: "User doesnt exist" });
+            }
             obj.push({
                 firstName: user.firstName,
                 lastName: user.lastName,

@@ -7,6 +7,7 @@ import useForceUpdate from "../hooks/useForceUpdate";
 import { storeFile } from "../utils/utilities";
 import Loading from "../components/Loading";
 import FriendsList from "./FriendsList";
+
 export default function Home() {
   const auth = useAuth();
   const description = useInputState();
@@ -169,34 +170,6 @@ export default function Home() {
     fetchHistory();
   };
 
-  const acceptRequest = async ({ requestId }) => {
-    try {
-      await post(`/user/acceptfriendrequest`, {
-        requestId,
-      }).then((data) => {
-        console.log(data);
-        if (data.success) addToast(data.data, { appearance: "success" });
-      });
-    } catch (err) {
-      console.log(err);
-      addToast(err.msg, { appearance: "error" });
-    }
-    fetchUserDetails();
-  };
-  const rejectRequest = async ({ requestId }) => {
-    try {
-      await post(`/user/rejectfriendrequest`, {
-        requestId,
-      }).then((data) => {
-        console.log(data);
-        if (data.success) addToast(data.data, { appearance: "success" });
-      });
-    } catch (err) {
-      console.log(err);
-      addToast(err.msg, { appearance: "error" });
-    }
-    fetchUserDetails();
-  };
 
   const fetchMerchantData = ()=> get('/user/merchant/items').then((data)=>{
     setMerchantItems(data.data)
@@ -265,6 +238,36 @@ export default function Home() {
    
   
   
+  const acceptRequest = async ( email ) => {
+    try {
+      console.log("emmmmmmm"+email);
+      await post(`/user/acceptfriendrequest`, {
+        requestEmail:email,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+  const rejectRequest = async (email ) => {
+    try {
+      await post(`/user/rejectfriendrequest`, {
+        requestEmail:email,
+      }).then((data) => {
+        console.log(data);
+        if (data.success) addToast(data.data, { appearance: "success" });
+      });
+    } catch (err) {
+      console.log(err);
+      addToast(err.msg, { appearance: "error" });
+    }
+    fetchUserDetails();
+  };
+
   const addFriend = async ( e) => {
     e.preventDefault();
     addFriendEmail.handleReset();
@@ -287,7 +290,7 @@ export default function Home() {
     removeFriendEmail.handleReset();
     try {
       await post(`/user/removefriend`, {
-        rfriendEmail : removeFriendEmail.value,
+        friendEmail : removeFriendEmail.value,
       }).then((data) => {
         console.log(data);
         if (data.success) addToast(data.data, { appearance: "success" });
@@ -340,7 +343,7 @@ export default function Home() {
       <aside>
         <div className="top">
           <h2>
-            Medical <br /> Assistant
+            Medical <br />Assistant
           </h2>
         </div>
         <div className="bottom">
@@ -350,7 +353,7 @@ export default function Home() {
        { !auth.user.isMerchant.isVerified && <button onClick={() => setRole(1)}><i class="fas fa-store"></i> Become Merchant</button>}
           <button onClick={() => setRole(0)}><i class="far fa-user-circle"></i> Profile</button>
           <button onClick={() => setRole(2)}>
-            <i class="fas fa-user-md"></i>{" "}
+            <i class="fas fa-user-md"></i>
             {userDetails.isDoctor.isVerified === false ? (
               <>I am a Doctor </>
             ) : (
@@ -387,13 +390,13 @@ export default function Home() {
                       {req.email}
                       <i
                         class="far fa-check-circle"
-                        onClick={() => acceptRequest(req.userId)}
+                        onClick={() => acceptRequest(req.email)}
                         style={{ color: "green" }}
                       ></i>{" "}
                       <i
                         class="far fa-times-circle"
                         style={{ color: "red" }}
-                        onClick={() => rejectRequest(req.userId)}
+                        onClick={() => rejectRequest(req.email)}
                       ></i>{" "}
                     </p>
                   );
