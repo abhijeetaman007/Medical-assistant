@@ -1,8 +1,29 @@
-# Medical Assistant - One stop solution for all medical related problems.
+# Medical Assistant
 
-## PPT - Team Alpha
+## To run the project locally
 
-<a href="https://www.canva.com/design/DAEoZJaqEZg/kTUWKFZBoz9iXVGtEnXCVg/view?utm_content=DAEoZJaqEZg&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton">Canva</a>
+### Frontend
+
+`cd client` <br/>
+`npm install`<br/>
+`npm start`
+
+### Backend
+
+`cd api` <br/>
+`npm install`<br/>
+`npm start`
+
+## Team Alpha
+
+-   Rhea
+-   Ishan
+-   Abhijeet
+-   Akhil
+
+<a href="https://www.canva.com/design/DAEoZJaqEZg/kTUWKFZBoz9iXVGtEnXCVg/view?utm_content=DAEoZJaqEZg&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton">PPT</a>
+
+<hr/>
 
 ## 😁 Unique Features!
 
@@ -32,15 +53,3 @@
 
 -   Medical merchants/store can connect to patients by showing available stocks for wide veriety of medicines or other medical equipments providing ease for patients to locate near by store with available stock.
 -   Merchants can any time update stocks.
-
-<hr/>
-
-## Setting Up Project
-### Frontend
-```cd client```    <br/>
-```npm install```  (To install package) <br/>
-```npm start```    (To start frontend)
-### Backend
-```cd api```       <br/>
-```npm install```  (To install package)<br/>
-```npm start```    (To start backend)
